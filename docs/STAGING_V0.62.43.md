@@ -63,13 +63,18 @@ soltanto le stagioni `2022`–`2024` e, contemporaneamente, date comprese tra il
 e il 7 agosto 2026. Questi vincoli impediscono oggi di importare un calendario
 Serie A coerente; non sono stati eseguiti ulteriori tentativi.
 
-Il primo avvio iOS collegato allo staging ha inoltre rilevato che la RPC
-`get_leghevo_client_rollout_eligibility_v9` supera il timeout PostgREST con
+Il primo avvio iOS collegato allo staging aveva inoltre rilevato che la RPC
+`get_leghevo_client_rollout_eligibility_v9` superava il timeout PostgREST con
 codice PostgreSQL `57014`. Una misurazione diretta con limite esteso a 60 secondi
-ha confermato il timeout: la catena ricalcola controlli di integrità dello schema
-non adatti al percorso runtime. Il client resta correttamente fail-closed. Prima
-del collaudo autenticato occorre introdurre una proiezione runtime precomputata,
-senza aumentare semplicemente il timeout o aggirare la barriera.
+aveva confermato il timeout: la catena ricalcolava controlli di integrità dello
+schema non adatti al percorso runtime. Il client era rimasto correttamente
+fail-closed.
+
+La migrazione 148 ha sostituito quel percorso con una proiezione certificata a
+costo costante. Sullo staging ha superato 20/20 controlli; la chiamata con chiave
+pubblicabile ha risposto HTTP 200 in 462 ms con contratto compatibile, protetto e
+go-live consentito. Il successivo smoke test iOS ha superato la barriera e
+visualizzato la schermata reale di registrazione/accesso.
 
 Il collaudo visivo in modalità demo è invece riuscito su Simulator iPhone 17 Pro
 con iOS 27.0 ed Expo Go: bundle caricato e schermata Notifiche renderizzata senza
@@ -77,8 +82,8 @@ errori bloccanti. Le notifiche push remote richiederanno una development build.
 
 ## Prossimi controlli
 
-1. Rendere il contratto di rilascio leggibile a tempo costante tramite una
-   proiezione server-side certificata e ripetere il test iOS sullo staging.
+1. Collaudare registrazione, accesso, recupero password e sessione con account
+   staging distinti.
 2. Definire il piano API-Football necessario per stagioni e date reali, quindi
    ripetere una sincronizzazione minima verificando persistenza e telemetria.
 3. Collaudare `send-push-notifications` con credenziali e dispositivo di test.

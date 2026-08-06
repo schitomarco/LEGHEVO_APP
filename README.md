@@ -19,6 +19,27 @@ applicazione idempotente della migrazione 147, typecheck, configurazione Expo ed
 export Android/iOS. Questo chiude lo sviluppo tecnico al 100%, ma non equivale a
 un deployment o a un'autorizzazione al go-live sul database di produzione.
 
+Il collaudo iOS sullo staging ha inoltre prodotto la migrazione operativa `148`:
+la RPC pubblica di compatibilità legge ora il certificato finale e le teste
+operative in tempo costante, senza ricostruire l'intero schema a ogni avvio. Il
+bundle mobile e la versione `0.62.43` restano invariati.
+
+### Hardening runtime · Proiezione di rilascio a costo costante
+
+- Migrazione: `database/148_constant_time_runtime_release_projection.sql`.
+- Script standalone: `LEGHEVO_SUPABASE_CONSTANT_TIME_RUNTIME_RELEASE_PROJECTION_v1.sql`.
+- Riutilizzo dell'endpoint v9 esistente, senza modifica del contratto client.
+- Verifica di fingerprint di run, check, certificato, testa, release e rollout.
+- Confronto fail-closed con le teste correnti di telemetria, outbox, consumer,
+  audit, disaster recovery, backup e ritorno in servizio.
+- Diagnostica dedicata con esattamente 20 controlli booleani.
+- Test locale anonimo: bundle certificato ammesso, bundle errato rifiutato.
+- Latenza locale misurata: 8,555 ms contro il timeout oltre 60 secondi del
+  percorso precedente.
+- Latenza staging via PostgREST: 462 ms; smoke test iOS collegato allo staging
+  arrivato correttamente alla schermata di registrazione e accesso.
+- Evidenze: `docs/VALIDAZIONE_RUNTIME_PROJECTION_V0.62.43.md`.
+
 ### v0.62.43 · Sigillo finale di production readiness e go-live controllato
 
 La disponibilità delle singole protezioni non è più sufficiente per autorizzare
