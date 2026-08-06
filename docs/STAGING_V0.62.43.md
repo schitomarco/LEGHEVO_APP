@@ -39,8 +39,13 @@ La password del database è conservata nel Portachiavi di macOS con servizio
 - Entrambe hanno `verify_jwt = false` perché usano l'autenticazione applicativa
   condivisa tramite il segreto server-side `automations`.
 - Una richiesta senza `automations` è stata rifiutata da entrambe con `HTTP 401`.
+- Una richiesta autenticata `GET`, scelta per non produrre effetti, ha raggiunto
+  entrambe le funzioni ed è stata rifiutata dal relativo handler con l'atteso
+  `HTTP 405`; questo conferma il riconoscimento della chiave.
 - Il segreto `API_FOOTBALL_KEY` è configurato nello staging.
 - Il segreto `automations` è configurato nello staging.
+- Il valore locale di `automations` è conservato nel Portachiavi di macOS con
+  servizio `supabase-leghevo-staging-automations`.
 - Nessun valore segreto, token o identificativo del progetto è registrato in
   questo documento o nei file versionati.
 
