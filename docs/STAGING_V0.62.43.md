@@ -123,6 +123,23 @@ Metro non ha segnalato errori funzionali durante il test. Restano gli avvisi
 attesi: notifiche push remote non pienamente supportate in Expo Go e
 deprecazione non bloccante di `SafeAreaView`.
 
+## Direzione Lega e concorrenza ruoli
+
+La prima lettura di `get_league_management_state_v28` ha rilevato SQLSTATE
+`25006`: la diagnostica mercato può chiudere offerte scadute, ma i wrapper erano
+dichiarati `STABLE` e PostgREST apriva una transazione read-only. La migrazione
+150 ha allineato a `VOLATILE` il contratto della diagnostica, della readiness e
+della catena gestionale v8–v31. Il bundle mobile certificato resta invariato e
+continua a interrogare v28, ora nuovamente operativo; l'adozione client delle
+versioni successive resta riservata a una release dedicata.
+
+Sul database locale sono stati verificati 27 contratti coinvolti. Sullo staging
+hanno risposto correttamente mercato v4, readiness v2 e gestione v28/v31. Il
+test con i due account QA ha inoltre confermato: escalation autonoma del manager
+bloccata, promozione eseguita dal proprietario, revisione obsoleta respinta e
+ripristino finale del partecipante al ruolo `manager`. La revisione della
+sessione ruoli è avanzata in modo causale in entrambe le operazioni valide.
+
 ## Prossimi controlli
 
 1. Collaudare su una casella reale la conferma registrazione e il recupero

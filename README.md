@@ -29,6 +29,19 @@ trigger di registrazione valorizza ora la fingerprint obbligatoria del nuovo
 profilo. Sono stati verificati sullo staging login, rinnovo sessione, centro
 account e centro privacy con un account QA isolato.
 
+Il collaudo della Direzione Lega ha prodotto anche la migrazione `150`: gli
+endpoint che possono chiudere offerte scadute dichiarano ora correttamente un
+contratto `VOLATILE`, evitando transazioni PostgREST read-only. Il bundle mobile
+certificato continua a usare lo stato gestionale v28, ora nuovamente operativo.
+
+### Hotfix Direzione Lega · Contratto di scrittura coerente
+
+- Migrazione: `database/150_management_state_write_contract.sql`.
+- Correzione dell'errore PostgreSQL `25006` sulla catena gestionale v8–v31.
+- Test staging: mercato, readiness e gestione v28/v31 tutti raggiungibili.
+- Test ruoli: escalation manager bloccata, promozione proprietario valida,
+  revisione obsoleta respinta e ripristino finale verificato.
+
 ### Hotfix Auth · Profilo atomico alla registrazione
 
 - Migrazione: `database/149_auth_registration_profile_fingerprint.sql`.
