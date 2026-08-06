@@ -38,6 +38,7 @@ mantiene il client in modalità fail-closed se una dipendenza diventa incoerente
 - Migrazione e SQL standalone identici, con 20 controlli diagnostici finali.
 - Validazione locale isolata completata con 20/20 controlli: Sviluppo 10 concluso e avanzamento tecnico al 100%.
 - Evidenze e limiti della verifica: `docs/VALIDAZIONE_V0.62.43.md`.
+- Stato e configurazione dello staging remoto: `docs/STAGING_V0.62.43.md`.
 - Preflight ripetibile: `node scripts/release-preflight.mjs`.
 - Collaudo staging: `docs/CHECKLIST_COLLAUDO_E2E.md`.
 - Smoke test Supabase locale senza file `.env`: `node scripts/local-e2e.mjs --check`.
