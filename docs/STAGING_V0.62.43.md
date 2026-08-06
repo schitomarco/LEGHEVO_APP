@@ -104,6 +104,25 @@ La registrazione pubblica richiede correttamente la conferma email. Il test di
 consegna non usa indirizzi casuali: va completato con una casella reale
 controllata dal team, insieme al recupero password.
 
+## Lega e invito multi-account
+
+Con l'account QA principale è stata creata sullo staging una lega classica in
+stato `draft`, con limite di 8 squadre, 500 crediti iniziali e rosa da 25. Sono
+risultati coerenti la membership amministratore, la squadra iniziale e la
+persistenza dopo il reload del bundle. La Home iOS ha mostrato la lega con
+conteggio `1/8`.
+
+Un secondo account QA isolato ha poi verificato l'intero percorso invito:
+anteprima del codice, disponibilità del posto, ingresso, ruolo `manager`,
+creazione della seconda squadra con 500 crediti e lettura della lega tramite le
+policy RLS. Dopo il reload, il primo dispositivo ha mostrato `2/8` partecipanti.
+I riferimenti QA restano esclusivamente nel Portachiavi macOS; codici invito,
+identificativi e credenziali non sono stati inseriti nei file versionati.
+
+Metro non ha segnalato errori funzionali durante il test. Restano gli avvisi
+attesi: notifiche push remote non pienamente supportate in Expo Go e
+deprecazione non bloccante di `SafeAreaView`.
+
 ## Prossimi controlli
 
 1. Collaudare su una casella reale la conferma registrazione e il recupero
@@ -111,7 +130,8 @@ controllata dal team, insieme al recupero password.
 2. Definire il piano API-Football necessario per stagioni e date reali, quindi
    ripetere una sincronizzazione minima verificando persistenza e telemetria.
 3. Collaudare `send-push-notifications` con credenziali e dispositivo di test.
-4. Eseguire la checklist `docs/CHECKLIST_COLLAUDO_E2E.md` con account distinti.
+4. Proseguire la checklist `docs/CHECKLIST_COLLAUDO_E2E.md` con i due account QA
+   già predisposti, partendo da gestione membri e configurazione della lega.
 5. Completare build e test iOS/Android su simulatori e dispositivi target.
 6. Mantenere la produzione separata finché backup, restore rehearsal, rollout e
    rollback non saranno stati verificati e approvati esplicitamente.
