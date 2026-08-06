@@ -57,12 +57,32 @@ scegliere un test minimo compatibile con la quota disponibile. Le automazioni
 cron resteranno disattivate fino all'eventuale passaggio a un piano adeguato e a
 un'esplicita approvazione operativa.
 
+Il test controllato del 6 agosto 2026 ha consumato due richieste. Il provider ha
+confermato la validità della connessione e del segreto, ma il piano Free accetta
+soltanto le stagioni `2022`–`2024` e, contemporaneamente, date comprese tra il 5
+e il 7 agosto 2026. Questi vincoli impediscono oggi di importare un calendario
+Serie A coerente; non sono stati eseguiti ulteriori tentativi.
+
+Il primo avvio iOS collegato allo staging ha inoltre rilevato che la RPC
+`get_leghevo_client_rollout_eligibility_v9` supera il timeout PostgREST con
+codice PostgreSQL `57014`. Una misurazione diretta con limite esteso a 60 secondi
+ha confermato il timeout: la catena ricalcola controlli di integrità dello schema
+non adatti al percorso runtime. Il client resta correttamente fail-closed. Prima
+del collaudo autenticato occorre introdurre una proiezione runtime precomputata,
+senza aumentare semplicemente il timeout o aggirare la barriera.
+
+Il collaudo visivo in modalità demo è invece riuscito su Simulator iPhone 17 Pro
+con iOS 27.0 ed Expo Go: bundle caricato e schermata Notifiche renderizzata senza
+errori bloccanti. Le notifiche push remote richiederanno una development build.
+
 ## Prossimi controlli
 
-1. Eseguire una sincronizzazione API-Football minima e verificare persistenza,
-   telemetria e consumo quota.
-2. Collaudare `send-push-notifications` con credenziali e dispositivo di test.
-3. Eseguire la checklist `docs/CHECKLIST_COLLAUDO_E2E.md` con account distinti.
-4. Completare build e test iOS/Android su simulatori e dispositivi target.
-5. Mantenere la produzione separata finché backup, restore rehearsal, rollout e
+1. Rendere il contratto di rilascio leggibile a tempo costante tramite una
+   proiezione server-side certificata e ripetere il test iOS sullo staging.
+2. Definire il piano API-Football necessario per stagioni e date reali, quindi
+   ripetere una sincronizzazione minima verificando persistenza e telemetria.
+3. Collaudare `send-push-notifications` con credenziali e dispositivo di test.
+4. Eseguire la checklist `docs/CHECKLIST_COLLAUDO_E2E.md` con account distinti.
+5. Completare build e test iOS/Android su simulatori e dispositivi target.
+6. Mantenere la produzione separata finché backup, restore rehearsal, rollout e
    rollback non saranno stati verificati e approvati esplicitamente.
