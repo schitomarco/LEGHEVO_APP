@@ -24,6 +24,23 @@ la RPC pubblica di compatibilità legge ora il certificato finale e le teste
 operative in tempo costante, senza ricostruire l'intero schema a ogni avvio. Il
 bundle mobile e la versione `0.62.43` restano invariati.
 
+Il successivo collaudo Auth ha prodotto la migrazione correttiva `149`: il
+trigger di registrazione valorizza ora la fingerprint obbligatoria del nuovo
+profilo. Sono stati verificati sullo staging login, rinnovo sessione, centro
+account e centro privacy con un account QA isolato.
+
+### Hotfix Auth · Profilo atomico alla registrazione
+
+- Migrazione: `database/149_auth_registration_profile_fingerprint.sql`.
+- Correzione dell'incompatibilità tra il vincolo introdotto dalla migrazione 098
+  e il trigger legale ridefinito dalla migrazione 099.
+- Fingerprint iniziale coerente con nome, avatar assente, piano `free` e stato
+  `active`.
+- Test transazionali locale e staging: profilo, fingerprint, privacy e
+  certificazione dell'accettazione tutti validi.
+- Test staging con chiave pubblicabile: login, identità, refresh, account center
+  e privacy center protetti.
+
 ### Hardening runtime · Proiezione di rilascio a costo costante
 
 - Migrazione: `database/148_constant_time_runtime_release_projection.sql`.

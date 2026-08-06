@@ -1,6 +1,6 @@
 # Staging remoto LEGHEVO v0.62.43
 
-Data della verifica: 6 agosto 2026.
+Data della verifica: 7 agosto 2026.
 
 ## Esito
 
@@ -15,7 +15,7 @@ il go-live di produzione e non sostituisce i collaudi funzionali end-to-end.
 ## Database
 
 - Piano Supabase: Free, adeguato alla fase di sviluppo e collaudo iniziale.
-- Migrazioni applicate: 143 file della sequenza `001`–`147`.
+- Migrazioni applicate: 145 file della sequenza `001`–`149`.
 - Esclusioni intenzionali: `004`, `005`, `057` e `058`.
 - `004_automatic_provider_sync.sql` è esclusa perché abilita sincronizzazioni
   pianificate che richiedono il piano Pro di API-Football e consumano quota.
@@ -80,10 +80,34 @@ Il collaudo visivo in modalità demo è invece riuscito su Simulator iPhone 17 P
 con iOS 27.0 ed Expo Go: bundle caricato e schermata Notifiche renderizzata senza
 errori bloccanti. Le notifiche push remote richiederanno una development build.
 
+## Autenticazione staging
+
+Il collaudo Auth del 7 agosto 2026 ha rilevato e corretto un'incompatibilità tra
+le migrazioni 098 e 099: `profiles.profile_fingerprint` era ormai obbligatorio,
+ma il trigger `handle_new_user()` non lo valorizzava. Ogni nuova registrazione
+veniva quindi annullata dal database con errore HTTP 500.
+
+La migrazione 149 calcola la fingerprint iniziale nello stesso inserimento
+atomico del profilo, mantenendo invariata la certificazione delle accettazioni
+legali. I test locali e staging hanno confermato quattro proprietà: creazione
+del profilo, fingerprint di 32 caratteri, preferenze privacy e certificazione
+dell'accettazione. I test sono stati eseguiti in transazioni con rollback.
+
+È stato inoltre creato un account QA isolato e già confermato sul solo staging.
+Con la stessa chiave pubblicabile usata dall'app hanno avuto esito positivo:
+login email/password, verifica dell'utente, rinnovo della sessione, centro
+account protetto e centro privacy con documenti correnti accettati. Le
+credenziali non sono nei file: sono conservate nel Portachiavi macOS con servizio
+`supabase-leghevo-staging-qa-auth`.
+
+La registrazione pubblica richiede correttamente la conferma email. Il test di
+consegna non usa indirizzi casuali: va completato con una casella reale
+controllata dal team, insieme al recupero password.
+
 ## Prossimi controlli
 
-1. Collaudare registrazione, accesso, recupero password e sessione con account
-   staging distinti.
+1. Collaudare su una casella reale la conferma registrazione e il recupero
+   password; login, rinnovo sessione e centri account/privacy sono già validati.
 2. Definire il piano API-Football necessario per stagioni e date reali, quindi
    ripetere una sincronizzazione minima verificando persistenza e telemetria.
 3. Collaudare `send-push-notifications` con credenziali e dispositivo di test.

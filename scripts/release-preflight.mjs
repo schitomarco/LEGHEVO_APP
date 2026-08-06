@@ -9,7 +9,7 @@ const databaseDir = join(root, 'database');
 const migration147 = join(databaseDir, '147_final_production_readiness_and_go_live_seal.sql');
 const standalone147 = join(root, 'LEGHEVO_SUPABASE_FINAL_PRODUCTION_READINESS_AND_GO_LIVE_SEAL_v1.sql');
 const fingerprintPattern = /[a-f0-9]{64}/g;
-const expectedLastMigration = 148;
+const expectedLastMigration = 149;
 
 function fail(message, detail) {
   console.error(`\nPRE-FLIGHT NON SUPERATO: ${message}`);
