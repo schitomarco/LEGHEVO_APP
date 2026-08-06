@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "LEGHEVO",
+    "slug": "leghevo",
+    "scheme": "leghevo",
+    "version": "0.62.43",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#071426"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#C7FF39",
+          "defaultChannel": "leghevo"
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.leghevo.app"
+    },
+    "android": {
+      "package": "com.leghevo.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#071426",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

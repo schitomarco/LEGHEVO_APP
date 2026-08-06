@@ -1,0 +1,4 @@
+project_id = "leghevo"
+
+[functions.sync-football-data]
+verify_jwt = false
