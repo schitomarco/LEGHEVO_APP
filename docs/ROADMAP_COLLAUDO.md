@@ -2,15 +2,26 @@
 
 Questa roadmap ordina il lavoro in base al rischio e alle dipendenze reali. Le versioni indicate sono obiettivi di lavoro e possono essere accorpate quando una fase non richiede modifiche al codice.
 
-## Stato corrente · v0.62.43
+## Stato corrente · v0.62.44
 
 - Sviluppo 8 concluso al 90%, Sviluppo 9 concluso al 95% e Sviluppo 10 concluso al 100% tecnico.
+- La v0.62.44 include il lockfile nella fingerprint applicativa e ricertifica in modo auditabile i contratti modificati dalle hotfix 150 e 151.
+- La migrazione `152` ha superato simulazione con rollback, applicazione locale, verifica 10/10 e riesecuzione idempotente.
 - La v0.62.43 chiude la catena di production readiness con dieci capacità terminali e diagnostica finale di 20 controlli.
 - La sequenza di produzione `001`–`147`, esclusi i seed di sviluppo `005`, `057` e `058`, è stata applicata con successo a un database Supabase locale isolato.
 - La migrazione 147 ha restituito 20/20 controlli `true` ed è stata riapplicata con lo stesso esito per verificare il percorso idempotente.
 - Typecheck, configurazione Expo, fingerprint release ed export Android/iOS sono stati completati con successo.
 - Il completamento tecnico non certifica infrastruttura, credenziali, backup fisico, restore esterno, telemetria o traffico reali di produzione.
 - Le evidenze e i prerequisiti residui di go-live sono registrati in `docs/VALIDAZIONE_V0.62.43.md`.
+
+## v0.62.44 — Fingerprint dipendenze e ricertificazione
+
+- Inclusione di `package-lock.json` nel digest riproducibile della release.
+- Nuova release applicativa senza modifica retroattiva del certificato v0.62.43.
+- Storico immutabile delle tre ricertificazioni di modello necessarie.
+- Catena operativa riallineata fino alla production readiness 10/10.
+- Collaudo locale e staging completati; la produzione reale resta esclusa e
+  richiede comunque la checklist operativa dedicata.
 
 ## v0.62.43 — Chiusura tecnica dello Sviluppo 10
 

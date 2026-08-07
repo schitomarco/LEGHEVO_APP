@@ -7,9 +7,10 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const databaseDir = join(root, 'database');
 const migration147 = join(databaseDir, '147_final_production_readiness_and_go_live_seal.sql');
+const releaseMigration = join(databaseDir, '152_lockfile_bound_release_contract.sql');
 const standalone147 = join(root, 'LEGHEVO_SUPABASE_FINAL_PRODUCTION_READINESS_AND_GO_LIVE_SEAL_v1.sql');
 const fingerprintPattern = /[a-f0-9]{64}/g;
-const expectedLastMigration = 151;
+const expectedLastMigration = 152;
 
 function fail(message, detail) {
   console.error(`\nPRE-FLIGHT NON SUPERATO: ${message}`);
@@ -49,12 +50,22 @@ function assert(condition, message) {
 
 async function staticChecks() {
   const startedAt = Date.now();
-  const [packageText, appText, releaseText, migrationText, standaloneText, entries] =
-    await Promise.all([
+  const [
+    packageText,
+    appText,
+    releaseText,
+    fingerprintScriptText,
+    migration147Text,
+    releaseMigrationText,
+    standaloneText,
+    entries,
+  ] = await Promise.all([
       readFile(join(root, 'package.json'), 'utf8'),
       readFile(join(root, 'app.json'), 'utf8'),
       readFile(join(root, 'src/release.ts'), 'utf8'),
+      readFile(join(root, 'scripts/compute-release-fingerprint.mjs'), 'utf8'),
       readFile(migration147, 'utf8'),
+      readFile(releaseMigration, 'utf8'),
       readFile(standalone147, 'utf8'),
       readdir(databaseDir),
     ]);
@@ -68,11 +79,18 @@ async function staticChecks() {
   assert(releaseFingerprint, 'Fingerprint non leggibile in src/release.ts.');
   assert(packageJson.version === releaseVersion, 'Versione package.json non coerente.');
   assert(appJson.expo?.version === releaseVersion, 'Versione app.json non coerente.');
-  assert(migrationText.startsWith(`-- LEGHEVO v${releaseVersion}\n`), 'Versione della migrazione 147 non coerente.');
-  assert(migrationText === standaloneText, 'Migrazione 147 e SQL standalone non sono identici.');
+  assert(
+    fingerprintScriptText.includes("'package-lock.json'"),
+    'Il contratto fingerprint non include package-lock.json.',
+  );
+  assert(
+    releaseMigrationText.startsWith(`-- LEGHEVO v${releaseVersion}\n`),
+    'Versione della migrazione release non coerente.',
+  );
+  assert(migration147Text === standaloneText, 'Migrazione 147 e SQL standalone non sono identici.');
 
-  const sqlFingerprints = new Set(migrationText.match(fingerprintPattern) ?? []);
-  assert(sqlFingerprints.has(releaseFingerprint), 'Fingerprint release assente dalla migrazione 147.');
+  const sqlFingerprints = new Set(releaseMigrationText.match(fingerprintPattern) ?? []);
+  assert(sqlFingerprints.has(releaseFingerprint), 'Fingerprint release assente dalla migrazione release.');
 
   const numbered = entries
     .map((name) => ({ name, match: name.match(/^(\d{3})_.*\.sql$/) }))
@@ -91,7 +109,7 @@ async function staticChecks() {
   const unexpected = [...byNumber.keys()].filter((number) => number > expectedLastMigration);
   assert(duplicates.length === 0, `Migrazioni duplicate: ${JSON.stringify(duplicates)}.`);
   assert(missing.length === 0, `Migrazioni mancanti: ${missing.join(', ')}.`);
-  assert(unexpected.length === 0, `Migrazioni oltre la 147: ${unexpected.join(', ')}.`);
+  assert(unexpected.length === 0, `Migrazioni oltre la ${expectedLastMigration}: ${unexpected.join(', ')}.`);
   for (const developmentNumber of [5, 57, 58]) {
     const name = byNumber.get(developmentNumber)?.[0] ?? '';
     assert(name.includes('development_'), `La migrazione ${developmentNumber} non è marcata come sviluppo.`);

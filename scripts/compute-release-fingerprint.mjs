@@ -3,7 +3,15 @@ import { readdir, readFile } from 'node:fs/promises';
 import { extname, join, relative } from 'node:path';
 
 const root = new URL('../', import.meta.url);
-const includedRoots = ['App.tsx', 'index.ts', 'package.json', 'app.json', 'src', 'scripts'];
+const includedRoots = [
+  'App.tsx',
+  'index.ts',
+  'package.json',
+  'package-lock.json',
+  'app.json',
+  'src',
+  'scripts',
+];
 const excluded = new Set([
   'src/release.ts',
   'scripts/compute-release-fingerprint.mjs',

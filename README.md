@@ -1,6 +1,6 @@
 # LEGHEVO
 
-**Versione corrente: 0.62.43 — Sviluppo 10 concluso; avanzamento tecnico 100%.**
+**Versione corrente: 0.62.44 — contratto release legato al lockfile.**
 
 Prototipo mobile iOS e Android di **LEGHEVO**, il fantasy football con
 identità minimal premium e tono ironico da spogliatoio.
@@ -18,6 +18,25 @@ isolato: sequenza di produzione `001`–`147`, diagnostica finale `20/20`, secon
 applicazione idempotente della migrazione 147, typecheck, configurazione Expo ed
 export Android/iOS. Questo chiude lo sviluppo tecnico al 100%, ma non equivale a
 un deployment o a un'autorizzazione al go-live sul database di produzione.
+
+La v0.62.44 estende la fingerprint applicativa a `package-lock.json`, conserva
+lo storico delle ricertificazioni dei modelli interessati dalle hotfix e genera
+un nuovo certificato release senza riscrivere quello della v0.62.43. La
+migrazione `152` è stata validata localmente, anche in riesecuzione idempotente,
+con readiness protetta, sana e fresca e 10/10 controlli superati.
+
+### v0.62.44 · Contratto dipendenze riproducibile
+
+- Migrazione: `database/152_lockfile_bound_release_contract.sql`.
+- `package-lock.json` incluso nella fingerprint SHA-256 dell'applicazione.
+- Registro immutabile degli eventi di ricertificazione dei modelli modificati
+  dalle hotfix `150` e `151`.
+- Nuova release e nuovo rollout certificati senza modificare il certificato
+  release immutabile della v0.62.43.
+- Telemetria, outbox, consumer, audit, checkpoint, backup simulato, restore
+  rehearsal, service return e production readiness riallineati atomicamente.
+- Preflight, typecheck ed export Hermes Android/iOS superati.
+- Evidenze: `docs/VALIDAZIONE_V0.62.44.md`.
 
 Il collaudo iOS sullo staging ha inoltre prodotto la migrazione operativa `148`:
 la RPC pubblica di compatibilità legge ora il certificato finale e le teste
