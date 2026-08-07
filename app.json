@@ -3,7 +3,7 @@
     "name": "LEGHEVO",
     "slug": "leghevo",
     "scheme": "leghevo",
-    "version": "0.62.44",
+    "version": "0.62.45",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

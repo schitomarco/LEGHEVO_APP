@@ -1,4 +1,4 @@
-# Checklist di collaudo end-to-end LEGHEVO v0.62.44
+# Checklist di collaudo end-to-end LEGHEVO v0.62.45
 
 Questa checklist deve essere eseguita su staging con dati fittizi e almeno tre
 account distinti. Non usare il database di produzione.
@@ -6,7 +6,7 @@ account distinti. Non usare il database di produzione.
 ## Prerequisiti
 
 - [ ] Preflight superato con `node scripts/release-preflight.mjs`.
-- [x] Supabase staging separato dalla produzione e migrazioni `001`–`152` applicate senza l'automazione provider `004` e i seed di sviluppo `005`, `057` e `058`.
+- [x] Supabase staging separato dalla produzione e migrazioni `001`–`153` applicate senza l'automazione provider `004` e i seed di sviluppo `005`, `057` e `058`.
 - [ ] Provider configurato con credenziali di test o sorgente controllata.
 - [ ] Account `Presidente`, `Admin` e `Mister` disponibili su dispositivi o sessioni separate.
 - [ ] Orari dei dispositivi sincronizzati e notifiche abilitate dove richiesto.
@@ -69,8 +69,9 @@ Il collaudo è superato soltanto quando:
 - [ ] Tutte le prove applicabili sono superate e corredate da evidenza.
 - [ ] Non esistono problemi bloccanti o alti aperti.
 - [ ] I problemi medi accettati hanno responsabile e scadenza.
-- [x] La readiness v0.62.44 restituisce 10/10 sullo staging finale.
-- [x] Migrazione 152 e controlli fail-closed sono superati sullo staging finale.
+- [x] La readiness v0.62.45 restituisce 10/10 nella validazione atomica dello staging.
+- [x] Migrazione 153 e lint SQL remoto sono superati sullo staging finale.
+- [ ] Smoke test pubblico post-deploy con fingerprint valida e alterata da ripetere; l'esecuzione è stata bloccata dal limite d'uso del sistema di approvazione.
 - [ ] Backup e restore rehearsal reali sono verificati fuori dal database sorgente.
 - [ ] Build firmate Android/iOS corrispondono alla fingerprint certificata.
 - [ ] Piano di rollout, monitoraggio, rollback e responsabilità operative sono approvati.

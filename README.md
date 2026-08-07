@@ -1,6 +1,6 @@
 # LEGHEVO
 
-**Versione corrente: 0.62.44 — contratto release legato al lockfile.**
+**Versione corrente: 0.62.45 — hardening delle dipendenze transitive.**
 
 Prototipo mobile iOS e Android di **LEGHEVO**, il fantasy football con
 identità minimal premium e tono ironico da spogliatoio.
@@ -19,7 +19,24 @@ applicazione idempotente della migrazione 147, typecheck, configurazione Expo ed
 export Android/iOS. Questo chiude lo sviluppo tecnico al 100%, ma non equivale a
 un deployment o a un'autorizzazione al go-live sul database di produzione.
 
-La v0.62.44 estende la fingerprint applicativa a `package-lock.json`, conserva
+La v0.62.45 applica override patch compatibili a `brace-expansion` e `js-yaml`,
+riducendo l'audit npm da 15 a 13 segnalazioni senza forzare l'upgrade breaking
+a Expo 57. Il nuovo lockfile genera una fingerprint distinta e la migrazione
+`153` certifica atomicamente release, rollout e readiness senza modificare il
+certificato immutabile della v0.62.44.
+
+### v0.62.45 · Hardening transitive dependencies
+
+- Migrazione: `database/153_transitive_dependency_security_release.sql`.
+- Override patch mirati per tre linee `brace-expansion` e due `js-yaml`.
+- Audit residuo: 13 segnalazioni, una alta e dodici moderate; nessun uso di
+  `npm audit fix --force`.
+- Simulazione con rollback, applicazione locale e idempotenza superate.
+- Staging applicato fino alla migrazione `153`; lint SQL remoto senza errori.
+- Preflight, Expo Doctor, typecheck ed export Hermes Android/iOS superati.
+- Evidenze e limite del test pubblico: `docs/VALIDAZIONE_V0.62.45.md`.
+
+La v0.62.44 estendeva la fingerprint applicativa a `package-lock.json`, conserva
 lo storico delle ricertificazioni dei modelli interessati dalle hotfix e genera
 un nuovo certificato release senza riscrivere quello della v0.62.43. La
 migrazione `152` è stata validata localmente, anche in riesecuzione idempotente,
