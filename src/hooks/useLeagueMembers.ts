@@ -45,6 +45,66 @@ const demoMembers: LeagueMemberSummary[] = [
       creditsRemaining: 405,
     },
   },
+  {
+    userId: 'demo-user-4',
+    displayName: 'Giulia',
+    role: 'manager',
+    isOwner: false,
+    joinedAt: '2026-07-01T18:03:00Z',
+    team: {
+      id: 'demo-team-4',
+      name: 'FC Caffè Corretto',
+      creditsRemaining: 397,
+    },
+  },
+  {
+    userId: 'demo-user-5',
+    displayName: 'Davide',
+    role: 'manager',
+    isOwner: false,
+    joinedAt: '2026-07-01T18:04:00Z',
+    team: {
+      id: 'demo-team-5',
+      name: 'Panchina Lunga',
+      creditsRemaining: 391,
+    },
+  },
+  {
+    userId: 'demo-user-6',
+    displayName: 'Elena',
+    role: 'manager',
+    isOwner: false,
+    joinedAt: '2026-07-01T18:05:00Z',
+    team: {
+      id: 'demo-team-6',
+      name: 'I Tre Punti',
+      creditsRemaining: 384,
+    },
+  },
+  {
+    userId: 'demo-user-7',
+    displayName: 'Simone',
+    role: 'manager',
+    isOwner: false,
+    joinedAt: '2026-07-01T18:06:00Z',
+    team: {
+      id: 'demo-team-7',
+      name: 'Zona Cesarini',
+      creditsRemaining: 376,
+    },
+  },
+  {
+    userId: 'demo-user-8',
+    displayName: 'Marta',
+    role: 'manager',
+    isOwner: false,
+    joinedAt: '2026-07-01T18:07:00Z',
+    team: {
+      id: 'demo-team-8',
+      name: 'Undici di Cuore',
+      creditsRemaining: 369,
+    },
+  },
 ];
 
 export function useLeagueMembers(

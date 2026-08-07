@@ -2,7 +2,7 @@
   "name": "leghevo-mobile",
   "description": "App iOS e Android per il fantasy football LEGHEVO.",
   "private": true,
-  "version": "0.62.45",
+  "version": "0.62.46",
   "main": "index.ts",
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { existsSync, renameSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -68,17 +69,36 @@ if (mode === '--check') {
   console.log('\nLOCAL E2E PRONTO: servizi raggiungibili senza file .env.');
 } else if (mode === '--start') {
   const expoCli = join(root, 'node_modules/expo/bin/cli');
+  const dotenvLocalPath = join(root, '.env.local');
+  const parkedDotenvLocalPath = join(root, '.env.local.leghevo-local-e2e');
+  let parkedDotenvLocal = false;
+
+  if (existsSync(dotenvLocalPath)) {
+    if (existsSync(parkedDotenvLocalPath)) {
+      abort('esiste già il parcheggio temporaneo .env.local.leghevo-local-e2e.');
+    }
+    renameSync(dotenvLocalPath, parkedDotenvLocalPath);
+    parkedDotenvLocal = true;
+  }
+
   console.log('Avvio Expo collegato esclusivamente al Supabase locale...');
-  const result = spawnSync(process.execPath, [expoCli, 'start'], {
-    cwd: root,
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      EXPO_PUBLIC_SUPABASE_URL: apiUrl,
-      EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishableKey,
-    },
-  });
-  process.exit(result.status ?? 1);
+  try {
+    const result = spawnSync(process.execPath, [expoCli, 'start', '--clear'], {
+      cwd: root,
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        EXPO_NO_DOTENV: '1',
+        EXPO_PUBLIC_SUPABASE_URL: apiUrl,
+        EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishableKey,
+      },
+    });
+    process.exitCode = result.status ?? 1;
+  } finally {
+    if (parkedDotenvLocal) {
+      renameSync(parkedDotenvLocalPath, dotenvLocalPath);
+    }
+  }
 } else {
   abort('usa `--check` oppure `--start`.');
 }

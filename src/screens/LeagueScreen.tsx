@@ -851,7 +851,12 @@ function ActionCard({
   onPress?: () => void;
 }) {
   return (
-    <Pressable onPress={onPress} style={styles.actionCard}>
+    <Pressable
+      accessibilityLabel={`${title}. ${subtitle}`}
+      accessibilityRole="button"
+      onPress={onPress}
+      style={styles.actionCard}
+    >
       <View style={styles.actionIcon}>
         <Text style={styles.actionSymbol}>{symbol}</Text>
       </View>
