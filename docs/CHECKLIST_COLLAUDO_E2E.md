@@ -6,7 +6,7 @@ account distinti. Non usare il database di produzione.
 ## Prerequisiti
 
 - [ ] Preflight superato con `node scripts/release-preflight.mjs`.
-- [ ] Supabase staging separato dalla produzione e migrazioni `001`–`147` applicate senza i seed di sviluppo `005`, `057` e `058`.
+- [ ] Supabase staging separato dalla produzione e migrazioni `001`–`151` applicate senza l'automazione provider `004` e i seed di sviluppo `005`, `057` e `058`.
 - [ ] Provider configurato con credenziali di test o sorgente controllata.
 - [ ] Account `Presidente`, `Admin` e `Mister` disponibili su dispositivi o sessioni separate.
 - [ ] Orari dei dispositivi sincronizzati e notifiche abilitate dove richiesto.

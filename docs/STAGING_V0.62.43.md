@@ -140,6 +140,15 @@ bloccata, promozione eseguita dal proprietario, revisione obsoleta respinta e
 ripristino finale del partecipante al ruolo `manager`. La revisione della
 sessione ruoli è avanzata in modo causale in entrambe le operazioni valide.
 
+## Stato calendario via PostgREST
+
+Il collaudo API multi-account del 7 agosto 2026 ha rilevato SQLSTATE `25006`
+anche su `get_league_calendar_state_v3`: il preflight calendario aggiorna la
+diagnostica, mentre i wrapper v2 e v3 erano ancora dichiarati `STABLE`. La
+migrazione 151 li allinea a `VOLATILE`, evitando che PostgREST apra una
+transazione read-only. La correzione non cambia il bundle applicativo né il
+contratto JSON restituito dalle RPC.
+
 ## Prossimi controlli
 
 1. Collaudare su una casella reale la conferma registrazione e il recupero
