@@ -3,7 +3,7 @@
     "name": "LEGHEVO",
     "slug": "leghevo",
     "scheme": "leghevo",
-    "version": "0.62.48",
+    "version": "0.62.49",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -28,7 +28,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.leghevo.app"
+      "bundleIdentifier": "com.leghevo.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.leghevo.app",
