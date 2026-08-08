@@ -7,17 +7,22 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#071426"
-    },
     "plugins": [
       [
         "expo-notifications",
         {
           "color": "#C7FF39",
           "defaultChannel": "leghevo"
+        }
+      ],
+      "expo-sharing",
+      "expo-status-bar",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "backgroundColor": "#071426"
         }
       ]
     ],
