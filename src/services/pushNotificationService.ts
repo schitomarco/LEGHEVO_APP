@@ -326,7 +326,7 @@ export function subscribeToPushResponses(
     if (!response) {
       return;
     }
-    onOpen(mapNotificationTarget(response.notification.request.content.data));
+    onOpen(mapNotificationTarget(response.notification.request.content.data ?? {}));
   };
 
   openResponse(Notifications.getLastNotificationResponse());
