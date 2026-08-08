@@ -136,13 +136,13 @@ begin
   end if;
 
   v_outcome := public.certify_leghevo_operational_consumer_v1(
-    'production', 'operations_center', 'leghevo-operations-consumer', 9,
+    'production', 'operations_center', 'leghevo-operations-consumer', 10,
     v_operations_consumer_token,
     '62b00000-0000-4000-8000-000000000001'::uuid,
     jsonb_build_object('sourceMigration', 155, 'contract', 'expo-sdk-57-security-upgrade-v1')
   );
   v_outcome := public.certify_leghevo_operational_consumer_v1(
-    'production', 'notification_dispatch', 'leghevo-notification-consumer', 9,
+    'production', 'notification_dispatch', 'leghevo-notification-consumer', 10,
     v_notification_consumer_token,
     '62b00000-0000-4000-8000-000000000002'::uuid,
     jsonb_build_object('sourceMigration', 155, 'contract', 'expo-sdk-57-security-upgrade-v1')
@@ -172,23 +172,23 @@ begin
     'release.expo_sdk_57_security_upgrade_activation'
   );
   v_outcome := public.certify_leghevo_operational_telemetry_source_v1(
-    'production', 'leghevo-production-observer', 11, v_telemetry_token,
+    'production', 'leghevo-production-observer', 12, v_telemetry_token,
     '62b00000-0000-4000-8000-000000000007'::uuid,
     jsonb_build_object('provider', 'leghevo-runtime', 'sourceMigration', 155)
   );
   v_outcome := public.record_leghevo_authoritative_operational_window_v1(
-    'production', 'leghevo-production-observer', 11, v_telemetry_token, 1,
+    'production', 'leghevo-production-observer', 12, v_telemetry_token, 1,
     v_now - interval '5 minutes', v_now, 1000, 1, 0, 175,
     '62b00000-0000-4000-8000-000000000008'::uuid,
     jsonb_build_object('seedStage', 100, 'dependencySecurity', true)
   );
 
   perform public.seed_leghevo_accessibility_demo_fixture_drain_v1(
-    'production', 'operations_center', 'leghevo-operations-consumer', 9,
+    'production', 'operations_center', 'leghevo-operations-consumer', 10,
     v_operations_consumer_token, v_operations_delivery_token
   );
   perform public.seed_leghevo_accessibility_demo_fixture_drain_v1(
-    'production', 'notification_dispatch', 'leghevo-notification-consumer', 9,
+    'production', 'notification_dispatch', 'leghevo-notification-consumer', 10,
     v_notification_consumer_token, v_notification_delivery_token
   );
   v_outcome := public.run_leghevo_operational_delivery_audit_v1(
