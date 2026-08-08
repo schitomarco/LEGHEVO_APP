@@ -29,13 +29,23 @@ della lega, senza modificare la produzione.
   home e apertura della lega demo verificati, inclusa intestazione `8/8`.
 - Il file `.env.local` è stato ripristinato dopo il test locale.
 
-## Staging e limiti
+## Evidenze staging
 
-La migrazione 154 è stata proposta dal dry-run come unica variazione. Il
-deploy remoto non è certificato: i processi Supabase sono rimasti bloccati
-sulla connessione IPv6 e sono stati interrotti in modo controllato. Prima del
-collaudo staging occorre ristabilire il link IPv4 con la password del database
-di staging, applicare la sola migrazione 154 e ripetere gli smoke test della
-RPC di compatibilità con fingerprint valida e alterata.
+- Dry-run: proposta esclusivamente la migrazione `154`, senza seed o ruoli.
+- La migrazione 154 risulta registrata su staging; un secondo tentativo è
+  stato rifiutato correttamente dalla chiave univoca della cronologia, senza
+  rieseguire istruzioni SQL.
+- RPC v9 con fingerprint certificata: HTTP 200, compatibile, rollout idoneo,
+  release attiva `0.62.46`, readiness `certified` 10/10.
+- RPC v9 con fingerprint alterata: HTTP 200, non compatibile e non idonea al
+  rollout, codice `release.bundle_not_certified`.
+- Simulator iOS collegato a staging: la barriera della release 0.62.46 viene
+  superata e la schermata di accesso viene mostrata correttamente.
+
+## Limiti residui
+
+La checklist funzionale multi-account, le notifiche reali, le build firmate e
+le prove di backup/restore infrastrutturali restano gate separati. Non sono
+stati eseguiti su produzione.
 
 La produzione reale non è stata interrogata, modificata o distribuita.
