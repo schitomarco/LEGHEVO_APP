@@ -1,4 +1,4 @@
-# Checklist di collaudo end-to-end LEGHEVO v0.62.47
+# Checklist di collaudo end-to-end LEGHEVO v0.62.49
 
 Questa checklist deve essere eseguita su staging con dati fittizi e almeno tre
 account distinti. Non usare il database di produzione.
@@ -6,7 +6,7 @@ account distinti. Non usare il database di produzione.
 ## Prerequisiti
 
 - [x] Preflight superato con `node scripts/release-preflight.mjs`.
-- [x] Supabase staging separato dalla produzione e migrazioni fino alla `155` applicate senza l'automazione provider `004` e i seed di sviluppo `005`, `057` e `058`.
+- [x] Supabase staging separato dalla produzione e migrazioni fino alla `157` applicate senza l'automazione provider `004` e i seed di sviluppo `005`, `057` e `058`.
 - [ ] Provider configurato con credenziali di test o sorgente controllata.
 - [ ] Account `Presidente`, `Admin` e `Mister` disponibili su dispositivi o sessioni separate.
 - [ ] Orari dei dispositivi sincronizzati e notifiche abilitate dove richiesto.
@@ -69,8 +69,8 @@ Il collaudo è superato soltanto quando:
 - [ ] Tutte le prove applicabili sono superate e corredate da evidenza.
 - [ ] Non esistono problemi bloccanti o alti aperti.
 - [ ] I problemi medi accettati hanno responsabile e scadenza.
-- [x] La readiness v0.62.47 restituisce 10/10 nella validazione atomica dello staging.
-- [x] Migrazione 155 applicata e controllata sullo staging finale.
+- [x] La readiness v0.62.49 restituisce 10/10 nella validazione atomica dello staging.
+- [x] Migrazione 157 applicata e controllata sullo staging finale.
 - [x] Smoke test post-deploy con fingerprint valida e alterata superato.
 - [ ] Backup e restore rehearsal reali sono verificati fuori dal database sorgente.
 - [ ] Build firmate Android/iOS corrispondono alla fingerprint certificata.
