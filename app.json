@@ -41,6 +41,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2af78a3a-ea87-436a-abb0-ad47e553e782"
+      }
+    },
+    "owner": "schitomarco"
   }
 }
