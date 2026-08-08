@@ -41,6 +41,8 @@ della lega, senza modificare la produzione.
   rollout, codice `release.bundle_not_certified`.
 - Simulator iOS collegato a staging: la barriera della release 0.62.46 viene
   superata e la schermata di accesso viene mostrata correttamente.
+- Smoke test ospite automatizzato su staging: superati accesso senza account,
+  Home, apertura della lega demo e presenza coerente di `8/8` squadre.
 
 ## Limiti residui
 
