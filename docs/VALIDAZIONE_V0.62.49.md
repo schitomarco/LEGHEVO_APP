@@ -84,8 +84,24 @@ la produzione esclusa e riservando il numero `1.0.0` alla release finale.
 - Ricezione visiva su iPhone, apertura dell'app tramite tocco, navigazione alla
   Home e presenza nel centro notifiche interno: superate.
 
+## Build TestFlight staging
+
+- Creato un profilo EAS `testflight` con distribuzione App Store e variabili
+  pubbliche prelevate esclusivamente dall'ambiente EAS `development`, che in
+  questa fase identifica lo staging. Il profilo `production` resta separato.
+- Build iOS App Store completata con versione `0.62.49`, build number `2`, SDK
+  Expo 57 e commit Git `c30b0ec`.
+- IPA verificata: archivio integro, bundle `com.leghevo.app`, crittografia non
+  esente dichiarata `false`, `aps-environment=production`, TestFlight beta
+  reports attivi e debug disabilitato.
+- Scheda LEGHEVO e gruppo TestFlight interno creati in App Store Connect; chiave
+  EAS Submit generata con ruolo minimo `App Manager`.
+- Upload del binario accettato da App Store Connect. Elaborazione Apple e prima
+  installazione tramite TestFlight ancora da completare.
+
 ## Gate ancora aperti
 
+- Elaborazione Apple e installazione della build TestFlight `0.62.49 (2)`.
 - Build Android interna e prova su dispositivo/emulatore.
 - Recupero password end-to-end dopo il reset del rate limit email.
 - Backup/restore infrastrutturale reale.

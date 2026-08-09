@@ -31,7 +31,8 @@
       "bundleIdentifier": "com.leghevo.app",
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "2"
     },
     "android": {
       "package": "com.leghevo.app",
