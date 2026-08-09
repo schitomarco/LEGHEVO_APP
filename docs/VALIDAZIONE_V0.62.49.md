@@ -71,10 +71,22 @@ la produzione esclusa e riservando il numero `1.0.0` alla release finale.
 - Cambio password finale: da ripetere dopo il ripristino del limite email del
   provider Supabase; non e' ancora certificato come superato.
 
+## Notifiche push su iPhone reale
+
+- Permesso iOS concesso dall'utente e dispositivo Expo registrato sul solo
+  staging per l'account Mister QA, con versione app `0.62.49`.
+- Preferenze push e categorie sistema/lega abilitate; nessun token e' stato
+  mostrato o scritto nei file del progetto.
+- Notifica QA generata tramite `create_user_notification`, accodata dal trigger
+  applicativo e consegnata dalla Edge Function `send-push-notifications`.
+- Esito dispatcher: una consegna inviata, zero errori e zero retry; ticket Expo
+  registrato nel database.
+- Ricezione visiva su iPhone, apertura dell'app tramite tocco, navigazione alla
+  Home e presenza nel centro notifiche interno: superate.
+
 ## Gate ancora aperti
 
 - Build Android interna e prova su dispositivo/emulatore.
-- Notifiche push reali su dispositivo fisico.
 - Recupero password end-to-end dopo il reset del rate limit email.
 - Backup/restore infrastrutturale reale.
 
