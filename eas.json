@@ -18,6 +18,11 @@
     "preview": {
       "distribution": "internal"
     },
+    "testflight": {
+      "extends": "production",
+      "environment": "development",
+      "distribution": "store"
+    },
     "production": {
       "autoIncrement": true
     }
