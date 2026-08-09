@@ -79,6 +79,7 @@ export function useAuth() {
       const accessToken = params.get('access_token');
       const refreshToken = params.get('refresh_token');
       const code = params.get('code');
+      const tokenHash = params.get('token_hash');
 
       if (accessToken && refreshToken) {
         const { data, error } = await client.auth.setSession({
@@ -96,6 +97,21 @@ export function useAuth() {
           await client.auth.exchangeCodeForSession(code);
         if (error) {
           setRecoveryError(translateAuthError(error.message));
+          setPasswordRecovery(true);
+          return;
+        }
+        setSession(data.session);
+      } else if (tokenHash) {
+        const { data, error } = await client.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: 'recovery',
+        });
+        if (error || !data.session) {
+          setRecoveryError(
+            translateAuthError(
+              error?.message ?? 'La sessione di recupero non è stata creata.',
+            ),
+          );
           setPasswordRecovery(true);
           return;
         }
@@ -296,6 +312,16 @@ export function useAuth() {
   };
 
   const completePasswordRecovery = async (password: string) => {
+    if (!supabase) {
+      return { error: 'Il backend non è configurato su questo dispositivo.' };
+    }
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      return {
+        error:
+          'La sessione di recupero non è pronta. Richiedi una nuova email e riapri il link sul telefono.',
+      };
+    }
     const outcome = await saveNewPassword(password);
     if (!outcome.error) {
       setPasswordRecovery(false);

@@ -44,11 +44,38 @@ la produzione esclusa e riservando il numero `1.0.0` alla release finale.
 - Smoke test automatizzato superato: avvio app nativa, ingresso ospite, Home,
   apertura della lega demo, intestazione `8/8` e presenza della squadra demo.
 
+## Build e collaudo su iPhone reale
+
+- Development build EAS ad hoc generata, firmata, installata e avviata su
+  iPhone reale con Developer Mode attivo.
+- Collegamento Metro via rete locale e caricamento del bundle: superati.
+- Smoke test manuale superato per ingresso ospite, collegamento staging,
+  elenco e apertura lega, squadra, rosa, giocatori, classifica, calendario e
+  mercato.
+- Tre account QA auto-confermati sono stati associati a una lega staging
+  isolata, con una squadra ciascuno. Matrice autorizzativa verificata su iPhone:
+  Presidente, Admin e Mister superati.
+- Il pannello Direzione falliva per timeout: lo stato aggregato di rilascio
+  richiedeva circa 12,7 secondi e produceva circa 30 KB. Il client usa ora lo
+  stato interattivo di gestione, misurato in circa 0,2 secondi, lasciando i
+  controlli di rilascio fuori dal percorso di navigazione. Verifica Presidente
+  su iPhone reale: superata.
+
+## Recupero password
+
+- Redirect mobile reso deterministico tramite `leghevo://reset-password` e
+  autorizzato nello staging Supabase.
+- Gestiti sia il codice PKCE sia `token_hash` di recovery, con verifica OTP e
+  controllo esplicito della sessione prima del cambio password.
+- Apertura del link nell'app: superata.
+- Cambio password finale: da ripetere dopo il ripristino del limite email del
+  provider Supabase; non e' ancora certificato come superato.
+
 ## Gate ancora aperti
 
-- Build iOS per dispositivo fisico con registrazione UDID e credenziali Apple.
 - Build Android interna e prova su dispositivo/emulatore.
 - Notifiche push reali su dispositivo fisico.
-- Checklist multi-account e backup/restore infrastrutturale reale.
+- Recupero password end-to-end dopo il reset del rate limit email.
+- Backup/restore infrastrutturale reale.
 
 La produzione reale non e' stata interrogata, modificata o distribuita.

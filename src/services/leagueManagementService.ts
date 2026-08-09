@@ -40,6 +40,25 @@ export async function fetchLeagueManagementState(
     throw new Error('Il collegamento al backend non è configurato.');
   }
 
+  // The later management-state revisions also aggregate release-readiness and
+  // disaster-recovery diagnostics. Those checks are useful for deployment
+  // certification, but they can exceed the interactive request timeout on a
+  // cold project. Revision 14 contains the complete league-management domain
+  // state needed by this screen and keeps navigation responsive.
+  const interactiveState = await supabase.rpc(
+    'get_league_management_state_v14',
+    { p_league_id: leagueId },
+  );
+  if (!interactiveState.error) {
+    return normalizeManagementState(interactiveState.data);
+  }
+  if (!isMissingManagementFunction(
+    interactiveState.error.message,
+    'get_league_management_state_v14',
+  )) {
+    throw new Error(translateManagementError(interactiveState.error.message));
+  }
+
   const latestV28 = await supabase.rpc('get_league_management_state_v28', {
     p_league_id: leagueId,
   });

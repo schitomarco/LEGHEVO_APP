@@ -1,6 +1,7 @@
-import * as Linking from 'expo-linking';
 import { supabase } from '../lib/supabase';
 import type { AuthOutcome } from '../hooks/useAuth';
+
+const PASSWORD_RESET_REDIRECT_URL = 'leghevo://reset-password';
 
 export type AccountCenterState = {
   userId: string;
@@ -35,7 +36,7 @@ export type AccountCenterState = {
 };
 
 export function passwordResetRedirectUrl() {
-  return Linking.createURL('reset-password');
+  return PASSWORD_RESET_REDIRECT_URL;
 }
 
 export async function sendPasswordReset(
@@ -325,6 +326,9 @@ export function translateAccountError(message: string) {
   }
   if (normalized.includes('same password')) {
     return 'La nuova password deve essere diversa dalla precedente.';
+  }
+  if (normalized.includes('auth session missing')) {
+    return 'La sessione di recupero non è pronta. Richiedi una nuova email e riapri il link sul telefono.';
   }
   if (
     normalized.includes('aggiornato su un altro dispositivo') ||
