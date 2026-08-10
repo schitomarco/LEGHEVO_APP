@@ -94,6 +94,25 @@ server. Apple e Google restano disabilitati fino al collaudo completo e alla
 preparazione della versione 1.0.0. Gli annunci reali restano assenti finché
 AdMob, consenso e documenti legali aggiornati non sono pubblicati.
 
+## Stato collaudo store · 11 agosto 2026
+
+- App RevenueCat Apple e Google create per `com.leghevo.app`; chiavi SDK
+  pubbliche configurate come variabili sensibili in EAS `preview` e
+  `production`, senza valori conservati nel repository.
+- Preflight fail-closed iOS e Android superato in entrambi gli ambienti EAS.
+- App Store Connect: gruppo `LEGHEVO Premium`, prodotti mensile e annuale
+  creati con gli identificatori previsti, prezzi Italia 2,99 EUR/mese e
+  9,99 EUR/anno.
+- RevenueCat: entrambi i prodotti Apple collegati all'entitlement `premium` e
+  ai package Monthly/Annual dell'offerta predefinita `Premium`; i prodotti
+  Test Store restano limitati allo sviluppo.
+- Build iOS di collaudo `0.62.49 (3)` generata con ambiente `preview` e inviata
+  a TestFlight. `ascAppId` è dichiarato nel profilo submit per rendere
+  ripetibili i caricamenti successivi.
+- Google Play reale resta in attesa dell'attivazione dell'account sviluppatore;
+  il prodotto `leghevo_premium` e i base plan `monthly`/`annual` non sono
+  ancora stati creati.
+
 ## Collaudo minimo prima dell’attivazione
 
 1. Acquisto sandbox Apple e Google.
