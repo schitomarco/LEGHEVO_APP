@@ -77,11 +77,22 @@ come previsto dal contratto HIGH/CRITICAL.
   - cache hit certificata, zero unità quota e chiamata esterna evitata.
 - Nessun cron del nuovo provider è stato attivato.
 
+## Fase 3: recovery provider-aware
+
+- Migrazione `163`: il provider viene conservato nel payload immutabile dei
+  nuovi run football-data e riutilizzato dalla coda recovery.
+- Il worker arricchisce la richiesta recovery dal registro server-side, senza
+  fidarsi di parametri aggiunti dal client.
+- Test staging football-data del 23 maggio 2026: HTTP 200, 2 fixture,
+  lifecycle applicato e `provider: football-data` presente nel run concluso.
+- Regressione API-Football: HTTP 200 e run completato sulla finestra gratuita
+  ammessa, senza fixture inventate.
+- Test locali, seconda applicazione idempotente e dry-run della sola 163:
+  superati; nessun seed e nessun ruolo.
+
 ## Gate ancora aperti
 
 - Mapping verificato dei club Serie A tra i due provider.
-- Preservazione esplicita del provider nelle richieste della coda recovery,
-  prima di abilitare recuperi automatici football-data.
 - Collaudo del Centro Operativo su una build collegata allo staging.
 - Nuovo contratto release e nuova fingerprint: il preflight `0.62.49` resta
   intenzionalmente chiuso perché non deve essere modificato retroattivamente.

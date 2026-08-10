@@ -100,5 +100,9 @@ chiamata esterna. La scrittura fixture usa un ingresso atomico dedicato che
 mantiene intatto il contratto legacy API-Football. Non è stato attivato alcun
 cron automatico.
 
+La migrazione `163` conserva inoltre il provider nei run football-data e lo
+ricostruisce dal registro autorevole quando il worker preleva una recovery.
+Il client non può scegliere o alterare il provider di un recupero già accodato.
+
 La produzione resta esclusa fino a un'autorizzazione esplicita e a una nuova
 release candidate validata.

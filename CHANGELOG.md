@@ -8,6 +8,8 @@
 - collaudato sullo staging il calendario reale Serie A con pubblicazione
   atomica di 7 fixture, lifecycle applicato, identità canoniche e cache hit a
   costo quota zero; nessun cron automatico attivato;
+- resa provider-aware la recovery del calendario, conservando l'identità
+  football-data nei run e ricostruendola dal registro server-side nel worker;
 
 - introdotta la fondazione multi-provider per API-Football Free e
   football-data.org Free, mantenendo Supabase come fonte autorevole;

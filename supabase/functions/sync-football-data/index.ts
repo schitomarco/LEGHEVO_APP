@@ -1366,7 +1366,9 @@ async function claimNextRecoveryRequest(
     return null;
   }
 
-  return normalizeProviderRecoveryClaim(raw);
+  return normalizeProviderRecoveryClaim(
+    await enrichRecoveryProvider(supabase, raw),
+  );
 }
 
 async function claimRecoveryRequest(
@@ -1409,7 +1411,32 @@ async function claimRecoveryRequest(
     result.data && typeof result.data === 'object'
       ? (result.data as Record<string, unknown>)
       : {};
-  return normalizeProviderRecoveryClaim(raw);
+  return normalizeProviderRecoveryClaim(
+    await enrichRecoveryProvider(supabase, raw),
+  );
+}
+
+async function enrichRecoveryProvider(
+  supabase: SupabaseClient,
+  raw: Record<string, unknown>,
+) {
+  if (!raw.requestId || !raw.requestedFor || typeof raw.requestedFor !== 'object') {
+    return raw;
+  }
+  const { data, error } = await supabase
+    .from('provider_recovery_requests')
+    .select('provider')
+    .eq('id', String(raw.requestId))
+    .single();
+  if (error) throw error;
+  const requestedFor = raw.requestedFor as Record<string, unknown>;
+  if (data?.provider === FOOTBALL_DATA_PROVIDER && requestedFor.action === 'sync-fixtures') {
+    return {
+      ...raw,
+      requestedFor: { ...requestedFor, provider: FOOTBALL_DATA_PROVIDER },
+    };
+  }
+  return raw;
 }
 
 function isMissingRpcError(message: string) {
