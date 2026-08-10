@@ -140,7 +140,21 @@ come previsto dal contratto HIGH/CRITICAL.
 
 ## Gate ancora aperti
 
-- Collaudo del Centro Operativo su una build collegata allo staging.
 - Nuovo contratto release e nuova fingerprint: il preflight `0.62.49` resta
   intenzionalmente chiuso perché non deve essere modificato retroattivamente.
 - Produzione e release finale `1.0.0`: non autorizzate da questo intervento.
+
+## Fase 7: collaudo Centro Operativo
+
+- Chiamate protette sullo staging completate con HTTP 200; richiesta anonima
+  respinta con HTTP 401 e `permission denied`.
+- Budget API-Football verificato a 3/100 unità consumate, 97 residue, 77
+  ordinarie e 20 riservate P0/P1; nessuna richiesta rifiutata.
+- Budget football-data verificato a 4/100000 unità consumate; telemetria
+  aggregata con 7 chiamate esterne, una evitata, un cache hit e previsione a
+  30 giorni pari a 105.
+- Diagnostica protetta: 25 controlli restituiti senza booleani falsi.
+- Collaudo visivo su iOS Simulator completato: apertura lega, Centro
+  Operativo, priorità, consegne, copertura provider, budget e pipeline dati.
+- La fixture demo espone ora un budget coerente con lo staging, permettendo di
+  collaudare la scheda anche senza creare sessioni o utenti di prova.

@@ -26,6 +26,9 @@
 - completato il mapping Serie A corrente 20/20 con ricerche live ufficiali per
   Pisa, Cremonese e Sassuolo: zero conflitti e identità canoniche condivise su
   tutto il catalogo staging;
+- collaudato il Centro Operativo su iOS Simulator e staging: autorizzazione
+  fail-closed, diagnostica integra e budget provider visibile anche nella
+  fixture demo con quota, riserva, cache e previsione mensile;
 
 - introdotta la fondazione multi-provider per API-Football Free e
   football-data.org Free, mantenendo Supabase come fonte autorevole;
