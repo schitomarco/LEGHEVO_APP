@@ -96,12 +96,14 @@ la produzione esclusa e riservando il numero `1.0.0` alla release finale.
   reports attivi e debug disabilitato.
 - Scheda LEGHEVO e gruppo TestFlight interno creati in App Store Connect; chiave
   EAS Submit generata con ruolo minimo `App Manager`.
-- Upload del binario accettato da App Store Connect. Elaborazione Apple e prima
-  installazione tramite TestFlight ancora da completare.
+- Upload del binario accettato ed elaborato da App Store Connect. Installazione
+  tramite TestFlight, avvio senza Metro, login Mister QA e navigazione di lega,
+  squadra, rosa, calendario e mercato: superati.
+- Notifica dedicata `LEGHEVO · TestFlight OK` consegnata alla build TestFlight
+  con zero errori e zero retry; il tocco ha aperto correttamente LEGHEVO.
 
 ## Gate ancora aperti
 
-- Elaborazione Apple e installazione della build TestFlight `0.62.49 (2)`.
 - Build Android interna e prova su dispositivo/emulatore.
 - Recupero password end-to-end dopo il reset del rate limit email.
 - Backup/restore infrastrutturale reale.
