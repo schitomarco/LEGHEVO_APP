@@ -10,6 +10,7 @@ import type {
   LeagueProviderIncidentCenter,
   LeagueProviderRecoveryCenter,
   LeagueProviderSyncHealth,
+  LeagueProviderBudgetCenter,
   LeagueSummary,
   ProviderAutomaticRetryCenter,
   ProviderRecoveryCircuitBreakerCenter,
@@ -61,11 +62,12 @@ export async function fetchLeagueOperationsCenter(
     throw new Error('Il collegamento al backend non è configurato.');
   }
 
-  const [{ data, error }, providerSync] = await Promise.all([
+  const [{ data, error }, providerSync, providerBudget] = await Promise.all([
     supabase.rpc('get_league_operations_center', {
       p_league_id: leagueId,
     }),
     fetchLeagueProviderSyncHealth(leagueId),
+    fetchLeagueProviderBudgetCenter(leagueId),
   ]);
 
   if (error) {
@@ -75,7 +77,31 @@ export async function fetchLeagueOperationsCenter(
   return {
     ...normalizeLeagueOperationsCenter(data),
     providerSync,
+    providerBudget,
   };
+}
+
+async function fetchLeagueProviderBudgetCenter(
+  leagueId: string,
+): Promise<LeagueProviderBudgetCenter | null> {
+  if (!supabase) {
+    return null;
+  }
+  const { data, error } = await supabase.rpc(
+    'get_league_provider_budget_center_v1',
+    { p_league_id: leagueId },
+  );
+  if (error) {
+    const normalized = error.message.toLowerCase();
+    if (
+      normalized.includes('get_league_provider_budget_center_v1')
+      || (normalized.includes('function') && normalized.includes('does not exist'))
+    ) {
+      return null;
+    }
+    throw new Error(translateLeagueOperationsError(error.message));
+  }
+  return normalizeProviderBudgetCenter(data);
 }
 
 async function fetchLeagueProviderSyncHealth(
@@ -1334,6 +1360,49 @@ export function normalizeLeagueOperationsCenter(
     focusMatchday: normalizeFocusMatchday(raw.focusMatchday),
     nextLineupMatchday: normalizeLineupMatchday(raw.nextLineupMatchday),
     providerSync: null,
+    providerBudget: null,
+  };
+}
+
+function normalizeProviderBudgetCenter(
+  value: unknown,
+): LeagueProviderBudgetCenter {
+  const raw = asRecord(value);
+  const metrics = asRecord(raw.metrics);
+  const providers = Array.isArray(raw.providers) ? raw.providers : [];
+  return {
+    generatedAt: toStringValue(raw.generatedAt),
+    providers: providers.map((value) => {
+      const provider = asRecord(value);
+      return {
+        provider: toStringValue(provider.provider),
+        dailyLimit: toNumber(provider.dailyLimit),
+        consumedUnits: toNumber(provider.consumedUnits),
+        remainingUnits: toNumber(provider.remainingUnits),
+        ordinaryRemainingUnits: toNumber(provider.ordinaryRemainingUnits),
+        reservedHighPriorityUnits: toNumber(
+          provider.reservedHighPriorityUnits,
+        ),
+        rejectedRequests: toNumber(provider.rejectedRequests),
+        cacheHits: toNumber(provider.cacheHits),
+        cacheEntries: toNumber(provider.cacheEntries),
+        providerReportedRemaining: toNullableNumber(
+          provider.providerReportedRemaining,
+        ),
+      };
+    }),
+    externalRequests: toNumber(metrics.externalRequests),
+    externalRequestsAvoided: toNumber(metrics.externalRequestsAvoided),
+    cacheHits: toNumber(metrics.cacheHits),
+    cacheMisses: toNumber(metrics.cacheMisses),
+    retries: toNumber(metrics.retries),
+    fallbacks: toNumber(metrics.fallbacks),
+    peakDaily: toNumber(metrics.peakDaily),
+    forecast30Days: toNumber(metrics.forecast30Days),
+    openIdentityConflicts: toNumber(raw.openIdentityConflicts),
+    runningWorkers: toNumber(raw.runningWorkers),
+    lastSyncAt: toNullableString(raw.lastSyncAt),
+    lastError: toNullableString(raw.lastError),
   };
 }
 

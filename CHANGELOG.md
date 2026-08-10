@@ -1,5 +1,16 @@
 # In sviluppo — Fondazione Free/Premium
 
+- introdotta la fondazione multi-provider per API-Football Free e
+  football-data.org Free, mantenendo Supabase come fonte autorevole;
+- aggiunti quota manager configurabile, riserva P0/P1, cache TTL server-side,
+  audit di cache hit/miss, retry, fallback e previsione del consumo;
+- introdotte identità canoniche LEGHEVO e mapping automatici per giocatori,
+  club, competizioni e partite, con conflitti separati e quarantena;
+- ridotto il polling API-Football: calendario orario, catalogo settimanale e
+  statistiche soltanto dopo la conclusione della partita;
+- aggiunta al Centro Operativo la scheda budget provider, senza esporre chiavi
+  o consentire chiamate dirette dai dispositivi;
+
 - contratto Free con una lega principale e massimo 6 partecipanti;
 - contratto Premium da 2,99 EUR/mese o 9,99 EUR/anno con leghe senza limite commerciale,
   massimo 20 partecipanti per lega e nessuna pubblicità sul singolo account;

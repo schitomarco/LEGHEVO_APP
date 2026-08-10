@@ -1,3 +1,9 @@
+import {
+  parseOptionalHeaderInteger,
+  type ProviderQuotaMetadata,
+  type ProviderRequestOptions,
+} from './footballProvider.ts';
+
 const API_BASE_URL = 'https://v3.football.api-sports.io';
 
 export const PROVIDER_PAYLOAD_CONTRACT_VERSION =
@@ -20,7 +26,17 @@ export type ApiFootballEnvelope<T> = {
   response: T[];
   results: number;
   delivery: ProviderDeliveryMetadata;
+  quota?: ProviderQuotaMetadata;
 };
+
+export interface ApiFootballReader {
+  readonly provider: string;
+  get<T>(
+    path: string,
+    parameters: Record<string, string | number>,
+    options?: ProviderRequestOptions,
+  ): Promise<ApiFootballEnvelope<T>>;
+}
 
 type ProviderContractIssue = {
   code: string;
@@ -81,12 +97,15 @@ export class ProviderDeliveryError extends Error {
   }
 }
 
-export class ApiFootballClient {
+export class ApiFootballClient implements ApiFootballReader {
+  readonly provider = 'api-football';
+
   constructor(private readonly apiKey: string) {}
 
   async get<T>(
     path: string,
     parameters: Record<string, string | number>,
+    _options?: ProviderRequestOptions,
   ): Promise<ApiFootballEnvelope<T>> {
     const url = new URL(`${API_BASE_URL}${path}`);
     Object.entries(parameters).forEach(([key, value]) => {
@@ -150,7 +169,27 @@ export class ApiFootballClient {
     }
 
     const delivery = validateProviderDelivery(path, parameters, body);
-    return { ...body, delivery } as ApiFootballEnvelope<T>;
+    return {
+      ...body,
+      delivery,
+      quota: {
+        httpStatus: response.status,
+        dailyLimit: parseOptionalHeaderInteger(
+          response.headers.get('x-ratelimit-requests-limit'),
+        ),
+        dailyRemaining: parseOptionalHeaderInteger(
+          response.headers.get('x-ratelimit-requests-remaining'),
+        ),
+        minuteLimit: parseOptionalHeaderInteger(
+          response.headers.get('X-RateLimit-Limit'),
+        ),
+        minuteRemaining: parseOptionalHeaderInteger(
+          response.headers.get('X-RateLimit-Remaining'),
+        ),
+        etag: response.headers.get('etag'),
+        lastModified: response.headers.get('last-modified'),
+      },
+    } as ApiFootballEnvelope<T>;
   }
 }
 

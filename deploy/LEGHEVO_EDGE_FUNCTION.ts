@@ -5,6 +5,10 @@ import type { SupabaseClient } from 'npm:@supabase/supabase-js@2';
 // ciclo vita monotono, pubblicazione atomica, watermark, quarantena, lease e fencing.
 // File standalone per il deploy della funzione sync-football-data.
 
+// ARCHIVIO LEGACY: snapshot standalone precedente al quota manager.
+// Non distribuire questo file. La sorgente autorevole è
+// supabase/functions/sync-football-data/index.ts con i moduli _shared.
+
 const API_BASE_URL = 'https://v3.football.api-sports.io';
 
 const PROVIDER_PAYLOAD_CONTRACT_VERSION =

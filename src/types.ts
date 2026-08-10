@@ -2410,6 +2410,36 @@ export type LeagueProviderSyncHealth = {
   applicationProductionReadiness: ApplicationProductionReadinessCenter | null;
 };
 
+export type ProviderBudgetUsage = {
+  provider: string;
+  dailyLimit: number;
+  consumedUnits: number;
+  remainingUnits: number;
+  ordinaryRemainingUnits: number;
+  reservedHighPriorityUnits: number;
+  rejectedRequests: number;
+  cacheHits: number;
+  cacheEntries: number;
+  providerReportedRemaining: number | null;
+};
+
+export type LeagueProviderBudgetCenter = {
+  generatedAt: string;
+  providers: ProviderBudgetUsage[];
+  externalRequests: number;
+  externalRequestsAvoided: number;
+  cacheHits: number;
+  cacheMisses: number;
+  retries: number;
+  fallbacks: number;
+  peakDaily: number;
+  forecast30Days: number;
+  openIdentityConflicts: number;
+  runningWorkers: number;
+  lastSyncAt: string | null;
+  lastError: string | null;
+};
+
 export type LeagueOperationsCenter = {
   leagueId: string;
   leagueName: string;
@@ -2422,6 +2452,7 @@ export type LeagueOperationsCenter = {
   focusMatchday: LeagueOperationFocusMatchday | null;
   nextLineupMatchday: LeagueOperationLineupMatchday | null;
   providerSync: LeagueProviderSyncHealth | null;
+  providerBudget: LeagueProviderBudgetCenter | null;
 };
 
 export type LeagueLineupReminderOutcome = {

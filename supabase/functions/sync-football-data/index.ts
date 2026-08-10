@@ -2,10 +2,13 @@ import { withSupabase } from 'npm:@supabase/server@1';
 import type { SupabaseClient } from 'npm:@supabase/supabase-js@2';
 import {
   ApiFootballClient,
+  type ApiFootballReader,
   ProviderContractError,
   ProviderDeliveryError,
   createProviderContractError,
 } from '../_shared/apiFootball.ts';
+import { QuotaCachedApiFootballClient } from '../_shared/providerGateway.ts';
+import { ProviderQuotaError } from '../_shared/footballProvider.ts';
 
 const PROVIDER = 'api-football';
 const COMPETITION_CODE = 'IT-SA';
@@ -225,7 +228,7 @@ export default {
       }
 
       const supabase = context.supabaseAdmin;
-      const api = new ApiFootballClient(apiKey);
+      const upstreamApi = new ApiFootballClient(apiKey);
       let payload: SyncRequest;
       let run: ProviderSyncRun;
       let recoveryRequestId: string | null = null;
@@ -326,6 +329,11 @@ export default {
       }
 
       try {
+        const api = new QuotaCachedApiFootballClient(
+          supabase,
+          upstreamApi,
+          () => run.id,
+        );
         run = await heartbeatRun(supabase, run, {
           phase: 'starting',
           current: 0,
@@ -447,7 +455,11 @@ export default {
         }
         return json(
           { error: message, runId: run.id, recoveryRequestId },
-          error instanceof ProviderContractError ? 422 : 500,
+          error instanceof ProviderContractError
+            ? 422
+            : error instanceof ProviderQuotaError
+              ? 429
+              : 500,
         );
       }
     },
@@ -456,7 +468,7 @@ export default {
 
 async function executeSync(
   supabase: SupabaseClient,
-  api: ApiFootballClient,
+  api: ApiFootballReader,
   payload: SyncRequest,
   leagueId: number,
   onProgress: ProviderProgressCallback,
@@ -505,7 +517,7 @@ async function executeSync(
 
 async function syncSeasonPlayers(
   supabase: SupabaseClient,
-  api: ApiFootballClient,
+  api: ApiFootballReader,
   leagueId: number,
   season: number,
   onProgress: ProviderProgressCallback,
@@ -635,7 +647,7 @@ async function upsertSeasonPlayers(
 
 async function syncFixtures(
   supabase: SupabaseClient,
-  api: ApiFootballClient,
+  api: ApiFootballReader,
   leagueId: number,
   season: number,
   date: string,
@@ -776,7 +788,7 @@ async function syncFixtures(
 
 async function syncFixturePlayers(
   supabase: SupabaseClient,
-  api: ApiFootballClient,
+  api: ApiFootballReader,
   fixtureId: number,
   onProgress: ProviderProgressCallback,
   assertLease: ProviderLeaseAssertion,
@@ -919,6 +931,7 @@ async function upsertFixtureTeamScores(
       {
         athlete_id: athleteId,
         matchday_id: matchdayId,
+        provider: PROVIDER,
         provider_fixture_id: String(fixtureId),
         provider_rating: calculated.rating,
         fantasy_score: calculated.fantasyScore,

@@ -100,6 +100,7 @@ function createDemoOperationsCenter(): LeagueOperationsCenter {
         },
       ],
     },
+    providerBudget: null,
     providerSync: {
       provider: 'api-football',
       protected: true,

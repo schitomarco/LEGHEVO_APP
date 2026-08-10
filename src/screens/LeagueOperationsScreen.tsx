@@ -57,6 +57,19 @@ export function LeagueOperationsScreen({
   const lineup = center?.nextLineupMatchday ?? null;
   const focus = center?.focusMatchday ?? null;
   const providerSync = center?.providerSync ?? null;
+  const providerBudget = center?.providerBudget ?? null;
+  const apiFootballBudget = providerBudget?.providers.find(
+    (provider) => provider.provider === 'api-football',
+  ) ?? null;
+  const footballDataBudget = providerBudget?.providers.find(
+    (provider) => provider.provider === 'football-data',
+  ) ?? null;
+  const providerCacheTotal = providerBudget
+    ? providerBudget.cacheHits + providerBudget.cacheMisses
+    : 0;
+  const providerCacheHitRate = providerCacheTotal > 0 && providerBudget
+    ? Math.round((providerBudget.cacheHits / providerCacheTotal) * 100)
+    : 0;
   const providerQuality = providerSync?.dataQuality ?? null;
   const providerIncidents = providerSync?.incidentCenter ?? null;
   const providerRecovery = providerSync?.recoveryCenter ?? null;
@@ -475,6 +488,69 @@ La richiesta sarà certificata e affidata al worker server senza duplicare i run
                   ]}
                 />
               </View>
+
+              {providerBudget ? (
+                <View style={styles.providerHealthCard}>
+                  <View style={styles.providerHealthHeader}>
+                    <View style={styles.providerHealthCopy}>
+                      <Text style={styles.providerHealthEyebrow}>
+                        BUDGET PROVIDER
+                      </Text>
+                      <Text style={styles.providerHealthTitle}>
+                        API esterne sotto controllo
+                      </Text>
+                    </View>
+                    <Text style={styles.providerHealthBadge}>
+                      CACHE CENTRALE
+                    </Text>
+                  </View>
+                  <View style={styles.providerHealthMetrics}>
+                    <View style={styles.providerHealthMetric}>
+                      <Text style={styles.providerHealthMetricValue}>
+                        {apiFootballBudget
+                          ? `${apiFootballBudget.consumedUnits}/${apiFootballBudget.dailyLimit}`
+                          : '—'}
+                      </Text>
+                      <Text style={styles.providerHealthMetricLabel}>
+                        API-FOOTBALL OGGI
+                      </Text>
+                    </View>
+                    <View style={styles.providerHealthMetric}>
+                      <Text style={styles.providerHealthMetricValue}>
+                        {apiFootballBudget?.reservedHighPriorityUnits ?? 0}
+                      </Text>
+                      <Text style={styles.providerHealthMetricLabel}>
+                        RISERVA P0/P1
+                      </Text>
+                    </View>
+                    <View style={styles.providerHealthMetric}>
+                      <Text style={styles.providerHealthMetricValue}>
+                        {providerCacheHitRate}%
+                      </Text>
+                      <Text style={styles.providerHealthMetricLabel}>
+                        CACHE HIT
+                      </Text>
+                    </View>
+                    <View style={styles.providerHealthMetric}>
+                      <Text style={styles.providerHealthMetricValue}>
+                        {providerBudget.externalRequestsAvoided}
+                      </Text>
+                      <Text style={styles.providerHealthMetricLabel}>
+                        CHIAMATE EVITATE
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={styles.providerHealthFooter}>
+                    football-data.org: {footballDataBudget
+                      ? `${footballDataBudget.consumedUnits} richieste tracciate`
+                      : 'in attesa di configurazione'}
+                    {' · '}previsione 30 giorni{' '}
+                    {providerBudget.forecast30Days}
+                    {' · '}ultimo sync{' '}
+                    {formatOptionalDateTime(providerBudget.lastSyncAt)}
+                  </Text>
+                </View>
+              ) : null}
 
               {providerSync ? (
                 <View
