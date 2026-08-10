@@ -90,9 +90,27 @@ come previsto dal contratto HIGH/CRITICAL.
 - Test locali, seconda applicazione idempotente e dry-run della sola 163:
   superati; nessun seed e nessun ruolo.
 
+## Fase 4: identità club verificata fra provider
+
+- Catalogo API-Football Serie A 2024 letto con HTTP 200: 20 club ufficiali.
+- Confronto con le identità football-data già osservate sullo staging: 12
+  corrispondenze esatte verificate, senza deduzioni basate sul solo nome.
+- Migrazione `164`: registro esplicito `verified_club_provider_links` e
+  riconciliazione service-role-only verso le identità canoniche LEGHEVO.
+- Test locale di convergenza: i due ID provider vengono collegati allo stesso
+  UUID canonico.
+- Test locale negativo: un mapping preesistente incompatibile viene messo in
+  quarantena e apre un conflitto, senza fusione automatica.
+- Seconda applicazione locale idempotente e dry-run staging della sola 164:
+  superati; nessun seed applicativo e nessun ruolo.
+- Verifica protetta sullo staging: 12/12 link `confirmed`, zero `pending`, zero
+  conflitti e 12 UUID canonici condivisi fra i due provider.
+- Nessun cron del nuovo provider è stato attivato.
+
 ## Gate ancora aperti
 
-- Mapping verificato dei club Serie A tra i due provider.
+- Completamento esplicito del mapping per i club della stagione corrente non
+  presenti nell'intersezione dei cataloghi gratuiti già verificata.
 - Collaudo del Centro Operativo su una build collegata allo staging.
 - Nuovo contratto release e nuova fingerprint: il preflight `0.62.49` resta
   intenzionalmente chiuso perché non deve essere modificato retroattivamente.

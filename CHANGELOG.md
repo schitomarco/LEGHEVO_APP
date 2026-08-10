@@ -10,6 +10,9 @@
   costo quota zero; nessun cron automatico attivato;
 - resa provider-aware la recovery del calendario, conservando l'identità
   football-data nei run e ricostruendola dal registro server-side nel worker;
+- aggiunto un registro service-role-only di 12 coppie club Serie A verificate
+  tra football-data e API-Football, tutte riconciliate sullo staging allo
+  stesso UUID canonico, con quarantena fail-closed per eventuali mismatch;
 
 - introdotta la fondazione multi-provider per API-Football Free e
   football-data.org Free, mantenendo Supabase come fonte autorevole;
