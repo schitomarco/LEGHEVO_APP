@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 
 export type CommercialTier = 'free' | 'premium';
+export type CommercialBillingPeriod = 'monthly' | 'annual';
 
 export type CommercialEntitlement = {
   tier: CommercialTier;
@@ -25,6 +26,7 @@ export type CommercialEntitlement = {
   adsEnabled: boolean;
   purchasesEnabled: boolean;
   monthlyPriceLabel: string;
+  annualPriceLabel: string;
 };
 
 export const FREE_COMMERCIAL_ENTITLEMENT: CommercialEntitlement = {
@@ -42,7 +44,8 @@ export const FREE_COMMERCIAL_ENTITLEMENT: CommercialEntitlement = {
   maxParticipantsPerLeague: 6,
   adsEnabled: true,
   purchasesEnabled: false,
-  monthlyPriceLabel: '9,99 €/mese',
+  monthlyPriceLabel: '2,99 €/mese',
+  annualPriceLabel: '9,99 €/anno',
 };
 
 export const DEMO_COMMERCIAL_ENTITLEMENT: CommercialEntitlement = {
@@ -86,7 +89,9 @@ export async function loadCommercialEntitlement(): Promise<{
   return { data: normalizeCommercialEntitlement(data) };
 }
 
-export async function startPremiumPurchase(): Promise<{ error?: string }> {
+export async function startPremiumPurchase(
+  _period: CommercialBillingPeriod,
+): Promise<{ error?: string }> {
   return {
     error:
       'Gli acquisti sono ancora in modalità preparazione. Nessun addebito è stato effettuato.',
@@ -154,7 +159,11 @@ function normalizeCommercialEntitlement(
     monthlyPriceLabel:
       typeof raw.monthlyPriceLabel === 'string'
         ? raw.monthlyPriceLabel.replace(' euro/', ' €/')
-        : '9,99 €/mese',
+        : '2,99 €/mese',
+    annualPriceLabel:
+      typeof raw.annualPriceLabel === 'string'
+        ? raw.annualPriceLabel.replace(' euro/', ' €/')
+        : '9,99 €/anno',
   };
 }
 

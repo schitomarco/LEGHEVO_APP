@@ -205,7 +205,8 @@ begin
     'maxParticipantsPerLeague', case when v_is_premium then 20 else 6 end,
     'adsEnabled', not v_is_premium,
     'purchasesEnabled', false,
-    'monthlyPriceLabel', '9,99 euro/mese'
+    'monthlyPriceLabel', '2,99 euro/mese',
+    'annualPriceLabel', '9,99 euro/anno'
   );
 end;
 $function$;

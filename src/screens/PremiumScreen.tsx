@@ -1,5 +1,9 @@
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import type { CommercialEntitlement } from '../services/subscriptionService';
+import type {
+  CommercialBillingPeriod,
+  CommercialEntitlement,
+} from '../services/subscriptionService';
 import { colors, radius } from '../theme';
 
 type Props = {
@@ -7,7 +11,7 @@ type Props = {
   error: string;
   isDemo: boolean;
   onBack: () => void;
-  onPurchase: () => Promise<{ error?: string }>;
+  onPurchase: (period: CommercialBillingPeriod) => Promise<{ error?: string }>;
   onRestore: () => Promise<{ error?: string }>;
 };
 
@@ -26,6 +30,9 @@ export function PremiumScreen({
   onPurchase,
   onRestore,
 }: Props) {
+  const [billingPeriod, setBillingPeriod] =
+    useState<CommercialBillingPeriod>('annual');
+
   return (
     <ScrollView
       style={styles.screen}
@@ -45,9 +52,23 @@ export function PremiumScreen({
       </Text>
 
       <View style={styles.priceCard}>
-        <Text style={styles.price}>{entitlement.monthlyPriceLabel}</Text>
+        <View style={styles.planRow}>
+          <PlanChoice
+            active={billingPeriod === 'annual'}
+            badge="PIÙ CONVENIENTE"
+            label="ANNUALE"
+            onPress={() => setBillingPeriod('annual')}
+            price={entitlement.annualPriceLabel}
+          />
+          <PlanChoice
+            active={billingPeriod === 'monthly'}
+            label="MENSILE"
+            onPress={() => setBillingPeriod('monthly')}
+            price={entitlement.monthlyPriceLabel}
+          />
+        </View>
         <Text style={styles.priceDetail}>
-          Abbonamento mensile · rinnovo automatico · disdici dallo store
+          Stesse funzioni Premium · rinnovo automatico · disdici dallo store
         </Text>
         {features.map((feature) => (
           <View key={feature} style={styles.featureRow}>
@@ -66,7 +87,7 @@ export function PremiumScreen({
         ) : (
           <Pressable
             disabled={!entitlement.purchasesEnabled || isDemo}
-            onPress={() => void onPurchase()}
+            onPress={() => void onPurchase(billingPeriod)}
             style={[
               styles.purchaseButton,
               (!entitlement.purchasesEnabled || isDemo) &&
@@ -112,6 +133,35 @@ export function PremiumScreen({
   );
 }
 
+function PlanChoice({
+  active,
+  badge,
+  label,
+  onPress,
+  price,
+}: {
+  active: boolean;
+  badge?: string;
+  label: string;
+  onPress: () => void;
+  price: string;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[styles.planChoice, active && styles.planChoiceActive]}
+    >
+      {badge ? <Text style={styles.planBadge}>{badge}</Text> : null}
+      <Text style={[styles.planLabel, active && styles.planLabelActive]}>
+        {label}
+      </Text>
+      <Text style={[styles.planPrice, active && styles.planPriceActive]}>
+        {price}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.navy },
   content: { padding: 20, paddingBottom: 42 },
@@ -152,7 +202,22 @@ const styles = StyleSheet.create({
     padding: 22,
     marginTop: 24,
   },
-  price: { color: colors.navy, fontSize: 28, fontWeight: '900' },
+  planRow: { flexDirection: 'row', gap: 10 },
+  planChoice: {
+    flex: 1,
+    minHeight: 100,
+    borderWidth: 1,
+    borderColor: '#D9DFD3',
+    borderRadius: radius.md,
+    padding: 13,
+    justifyContent: 'flex-end',
+  },
+  planChoiceActive: { backgroundColor: colors.navy, borderColor: colors.navy },
+  planBadge: { color: colors.lime, fontSize: 7, fontWeight: '900', marginBottom: 8 },
+  planLabel: { color: colors.muted, fontSize: 9, fontWeight: '900' },
+  planLabelActive: { color: colors.mutedLight },
+  planPrice: { color: colors.navy, fontSize: 18, fontWeight: '900', marginTop: 5 },
+  planPriceActive: { color: colors.warmWhite },
   priceDetail: {
     color: colors.muted,
     fontSize: 12,

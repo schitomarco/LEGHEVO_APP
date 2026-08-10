@@ -74,7 +74,7 @@ export function ProfileScreen({
         <Text style={styles.premiumBody}>
           {commercial.isPremium
             ? 'Il tuo account può creare leghe fino a 20 partecipanti.'
-            : `Una lega da 6 è gratis. Premium costa ${commercial.monthlyPriceLabel}.`}
+            : `Da ${commercial.annualPriceLabel}: più leghe e niente pubblicità.`}
         </Text>
         <Pressable onPress={onPremium} style={styles.premiumButton}>
           <Text style={styles.premiumButtonText}>

@@ -4,7 +4,7 @@
 
 | Capacità | Free | Premium |
 | --- | --- | --- |
-| Prezzo | gratuito | 9,99 EUR/mese |
+| Prezzo | gratuito | 2,99 EUR/mese oppure 9,99 EUR/anno |
 | Nuove leghe principali create | 1 | nessun limite commerciale |
 | Partecipanti per lega | massimo 6 | massimo 20 |
 | Partecipazione a leghe altrui | consentita | consentita |
@@ -42,8 +42,8 @@ la proiezione necessaria all’interfaccia, senza transazioni o payload privati.
 
 ## Integrazioni previste
 
-- prodotto Apple: `leghevo_premium_monthly`;
-- prodotto Google: `leghevo_premium_monthly`, base plan mensile;
+- prodotti Apple: `leghevo_premium_monthly` e `leghevo_premium_annual`;
+- prodotto Google: `leghevo_premium`, base plan `monthly` e `annual`;
 - entitlement RevenueCat: `premium`;
 - App User ID RevenueCat: UUID Supabase dell’utente;
 - webhook RevenueCat: Edge Function Supabase autenticata;

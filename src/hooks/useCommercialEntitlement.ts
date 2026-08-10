@@ -6,6 +6,7 @@ import {
   loadCommercialEntitlement,
   restorePremiumPurchases,
   startPremiumPurchase,
+  type CommercialBillingPeriod,
   type CommercialEntitlement,
 } from '../services/subscriptionService';
 
@@ -61,8 +62,8 @@ export function useCommercialEntitlement(
     return () => subscription.remove();
   }, [isDemo, refresh, userId]);
 
-  const purchase = async () => {
-    const outcome = await startPremiumPurchase();
+  const purchase = async (period: CommercialBillingPeriod) => {
+    const outcome = await startPremiumPurchase(period);
     if (outcome.error) {
       setError(outcome.error);
     }

@@ -1,7 +1,7 @@
 # In sviluppo — Fondazione Free/Premium
 
 - contratto Free con una lega principale e massimo 6 partecipanti;
-- contratto Premium da 9,99 EUR/mese con leghe senza limite commerciale,
+- contratto Premium da 2,99 EUR/mese o 9,99 EUR/anno con leghe senza limite commerciale,
   massimo 20 partecipanti per lega e nessuna pubblicità sul singolo account;
 - entitlement autorevole Supabase, eventi store idempotenti e non modificabili
   dal client;
