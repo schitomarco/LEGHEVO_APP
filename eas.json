@@ -16,6 +16,7 @@
       }
     },
     "preview": {
+      "environment": "development",
       "distribution": "internal"
     },
     "testflight": {
