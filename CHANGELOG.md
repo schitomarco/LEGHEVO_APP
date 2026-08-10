@@ -23,6 +23,9 @@
 - esteso il registro a 17 coppie confermate dopo una giornata completa da 10
   fixture football-data; restano esplicitamente non associati Pisa, Cremonese
   e Sassuolo finché gli ID API-Football correnti non saranno verificati;
+- completato il mapping Serie A corrente 20/20 con ricerche live ufficiali per
+  Pisa, Cremonese e Sassuolo: zero conflitti e identità canoniche condivise su
+  tutto il catalogo staging;
 
 - introdotta la fondazione multi-provider per API-Football Free e
   football-data.org Free, mantenendo Supabase come fonte autorevole;

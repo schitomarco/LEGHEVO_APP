@@ -122,10 +122,24 @@ come previsto dal contratto HIGH/CRITICAL.
   devono essere verificati sul catalogo corrente e non verranno dedotti dal
   solo nome.
 
+## Fase 6: completamento mapping 20/20
+
+- Tre ricerche live minime su API-Football, tutte HTTP 200 e senza errori:
+  Pisa `801` (`PIS`), Cremonese `520` (`CRE`) e Sassuolo `488` (`SAS`).
+- I risultati prima squadra sono stati distinti esplicitamente da omonimi,
+  formazioni U18/U19/U20 e squadra femminile tramite paese e codice ufficiale.
+- Migrazione `166`: collegate le tre coppie agli ID football-data già
+  canonicalizzati, senza modificare il contratto fail-closed.
+- Seconda applicazione locale idempotente superata.
+- Dry-run staging: proposta esclusivamente la migrazione 166; nessun seed e
+  nessun ruolo.
+- Verifica protetta finale: 20/20 link `confirmed`, zero `pending`, zero
+  conflitti nel registro, zero conflitti club aperti e 20 UUID canonici
+  condivisi fra i provider.
+- Nessun cron del nuovo provider è stato attivato.
+
 ## Gate ancora aperti
 
-- Verifica degli ID API-Football correnti di Pisa, Cremonese e Sassuolo, poi
-  completamento esplicito del mapping 20/20.
 - Collaudo del Centro Operativo su una build collegata allo staging.
 - Nuovo contratto release e nuova fingerprint: il preflight `0.62.49` resta
   intenzionalmente chiuso perché non deve essere modificato retroattivamente.
