@@ -7,10 +7,18 @@ import {
   ProviderDeliveryError,
   createProviderContractError,
 } from '../_shared/apiFootball.ts';
-import { QuotaCachedApiFootballClient } from '../_shared/providerGateway.ts';
+import {
+  FootballDataClient,
+  type FootballDataReader,
+} from '../_shared/footballData.ts';
+import {
+  QuotaCachedApiFootballClient,
+  QuotaCachedFootballDataClient,
+} from '../_shared/providerGateway.ts';
 import { ProviderQuotaError } from '../_shared/footballProvider.ts';
 
 const PROVIDER = 'api-football';
+const FOOTBALL_DATA_PROVIDER = 'football-data';
 const COMPETITION_CODE = 'IT-SA';
 
 type SyncRequest =
@@ -22,6 +30,7 @@ type SyncRequest =
       action: 'sync-fixtures';
       season: number;
       date: string;
+      provider?: 'api-football' | 'football-data';
     }
   | {
       action: 'sync-fixture-players';
@@ -166,6 +175,16 @@ type ApiFixture = {
   };
 };
 
+type FootballDataFixture = {
+  id: number;
+  utcDate: string;
+  status: string;
+  matchday: number;
+  homeTeam: { id: number; name: string; shortName?: string | null };
+  awayTeam: { id: number; name: string; shortName?: string | null };
+  score: { fullTime: { home: number | null; away: number | null } };
+};
+
 type ApiFixtureTeam = {
   team: { id: number; name: string };
   players: ApiFixturePlayer[];
@@ -215,11 +234,6 @@ export default {
         return json({ error: 'Metodo non consentito.' }, 405);
       }
 
-      const apiKey = Deno.env.get('API_FOOTBALL_KEY');
-      if (!apiKey) {
-        return json({ error: 'Chiave API-Football non configurata.' }, 500);
-      }
-
       let body: unknown;
       try {
         body = await request.json();
@@ -228,7 +242,6 @@ export default {
       }
 
       const supabase = context.supabaseAdmin;
-      const upstreamApi = new ApiFootballClient(apiKey);
       let payload: SyncRequest;
       let run: ProviderSyncRun;
       let recoveryRequestId: string | null = null;
@@ -329,11 +342,29 @@ export default {
       }
 
       try {
-        const api = new QuotaCachedApiFootballClient(
-          supabase,
-          upstreamApi,
-          () => run.id,
-        );
+        const provider = requestedProvider(payload);
+        const apiKey = Deno.env.get('API_FOOTBALL_KEY');
+        const footballDataKey = Deno.env.get('FOOTBALL_DATA_API_KEY');
+        const api = apiKey
+          ? new QuotaCachedApiFootballClient(
+              supabase,
+              new ApiFootballClient(apiKey),
+              () => run.id,
+            )
+          : null;
+        const footballData = footballDataKey
+          ? new QuotaCachedFootballDataClient(
+              supabase,
+              new FootballDataClient(footballDataKey),
+              () => run.id,
+            )
+          : null;
+        if (provider === PROVIDER && !api) {
+          throw new Error('Chiave API-Football non configurata.');
+        }
+        if (provider === FOOTBALL_DATA_PROVIDER && !footballData) {
+          throw new Error('Chiave football-data.org non configurata.');
+        }
         run = await heartbeatRun(supabase, run, {
           phase: 'starting',
           current: 0,
@@ -344,6 +375,7 @@ export default {
         const recordsProcessed = await executeSync(
           supabase,
           api,
+          footballData,
           payload,
           Number(Deno.env.get('API_FOOTBALL_LEAGUE_ID') ?? 135),
           async (progress) => {
@@ -468,7 +500,8 @@ export default {
 
 async function executeSync(
   supabase: SupabaseClient,
-  api: ApiFootballReader,
+  api: ApiFootballReader | null,
+  footballData: FootballDataReader | null,
   payload: SyncRequest,
   leagueId: number,
   onProgress: ProviderProgressCallback,
@@ -476,6 +509,23 @@ async function executeSync(
   fencedWrite: ProviderFencedWriter,
   recordDelivery: ProviderDeliveryRecorder,
 ) {
+  const provider = requestedProvider(payload);
+  if (provider === FOOTBALL_DATA_PROVIDER) {
+    if (payload.action !== 'sync-fixtures' || !footballData) {
+      throw new Error('football-data.org è autorizzato soltanto per il calendario.');
+    }
+    return syncFootballDataFixtures(
+      supabase,
+      footballData,
+      payload.season,
+      payload.date,
+      onProgress,
+      assertLease,
+      fencedWrite,
+      recordDelivery,
+    );
+  }
+  if (!api) throw new Error('Client API-Football non configurato.');
   switch (payload.action) {
     case 'sync-season-players':
       return syncSeasonPlayers(
@@ -513,6 +563,12 @@ async function executeSync(
     default:
       throw new Error('Azione di sincronizzazione non riconosciuta.');
   }
+}
+
+function requestedProvider(payload: SyncRequest) {
+  return payload.action === 'sync-fixtures'
+    ? payload.provider ?? PROVIDER
+    : PROVIDER;
 }
 
 async function syncSeasonPlayers(
@@ -784,6 +840,180 @@ async function syncFixtures(
   });
 
   return fixtures.length;
+}
+
+async function syncFootballDataFixtures(
+  supabase: SupabaseClient,
+  api: FootballDataReader,
+  season: number,
+  date: string,
+  onProgress: ProviderProgressCallback,
+  assertLease: ProviderLeaseAssertion,
+  fencedWrite: ProviderFencedWriter,
+  recordDelivery: ProviderDeliveryRecorder,
+) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    throw new Error('La data deve essere nel formato YYYY-MM-DD.');
+  }
+  const envelope = await api.get<FootballDataFixture>(
+    '/competitions/SA/matches',
+    { season, dateFrom: date, dateTo: date },
+  );
+  const fixtures = envelope.response;
+  for (let index = 0; index < fixtures.length; index += 1) {
+    const issue = validateFootballDataFixture(fixtures[index]);
+    if (issue) {
+      throw await createProviderContractError(
+        'response:/competitions/SA/matches',
+        issue.code,
+        issue.summary,
+        envelope.raw,
+        index,
+        'football-data-v4/leghevo-contract-v1',
+      );
+    }
+  }
+
+  const grouped = new Map<number, FootballDataFixture[]>();
+  for (const fixture of fixtures) {
+    const group = grouped.get(fixture.matchday) ?? [];
+    group.push(fixture);
+    grouped.set(fixture.matchday, group);
+  }
+  let completedGroups = 0;
+  let processed = 0;
+  for (const [number, group] of grouped.entries()) {
+    const kickoffDates = group
+      .map((item) => new Date(item.utcDate))
+      .sort((left, right) => left.getTime() - right.getTime());
+    const startsAt = kickoffDates[0];
+    const endsAt = new Date(
+      kickoffDates[kickoffDates.length - 1].getTime() + 3 * 60 * 60 * 1000,
+    );
+    const fencedMatchday = await fencedWrite('upsert-matchday', {
+      competition_code: COMPETITION_CODE,
+      season: String(season),
+      number,
+      starts_at: startsAt.toISOString(),
+      locks_at: startsAt.toISOString(),
+      ends_at: endsAt.toISOString(),
+    });
+    let matchday: { id: string };
+    if (fencedMatchday) {
+      matchday = normalizeFencedMatchday(fencedMatchday);
+    } else {
+      await assertLease();
+      const { data, error } = await supabase.from('matchdays').upsert(
+        {
+          competition_code: COMPETITION_CODE,
+          season: String(season),
+          number,
+          starts_at: startsAt.toISOString(),
+          locks_at: startsAt.toISOString(),
+          ends_at: endsAt.toISOString(),
+        },
+        { onConflict: 'competition_code,season,number' },
+      ).select('id').single();
+      if (error) throw error;
+      matchday = data;
+    }
+
+    const rows = group.map((item) => ({
+      provider: FOOTBALL_DATA_PROVIDER,
+      provider_fixture_id: String(item.id),
+      competition_code: COMPETITION_CODE,
+      season: String(season),
+      matchday_id: matchday.id,
+      kickoff_at: item.utcDate,
+      status: normalizeFootballDataStatus(item.status),
+      home_team_provider_id: String(item.homeTeam.id),
+      home_team_name: item.homeTeam.name,
+      away_team_provider_id: String(item.awayTeam.id),
+      away_team_name: item.awayTeam.name,
+      home_goals: item.score.fullTime.home,
+      away_goals: item.score.fullTime.away,
+      payload: item,
+      updated_at: new Date().toISOString(),
+    }));
+    const fencedFixtures = await fencedWrite('upsert-provider-fixtures', rows);
+    if (!fencedFixtures) {
+      await assertLease();
+      const { error } = await supabase.from('provider_fixtures').upsert(
+        rows,
+        { onConflict: 'provider,provider_fixture_id' },
+      );
+      if (error) throw error;
+    }
+    completedGroups += 1;
+    processed += group.length;
+    await onProgress({
+      phase: 'fixtures',
+      current: completedGroups,
+      total: grouped.size,
+      recordsProcessed: processed,
+    });
+  }
+  if (grouped.size === 0) {
+    await onProgress({
+      phase: 'fixtures', current: 0, total: 0, recordsProcessed: 0,
+    });
+  }
+  await recordDelivery({
+    unitNo: 1,
+    expectedUnitCount: 1,
+    declaredCurrent: 1,
+    declaredTotal: 1,
+    declaredResults: fixtures.length,
+    observedResults: fixtures.length,
+    recordsProcessed: processed,
+    entityKeys: fixtures.map((item) => String(item.id)),
+  });
+  return fixtures.length;
+}
+
+function validateFootballDataFixture(item: FootballDataFixture) {
+  if (!item || typeof item !== 'object') {
+    return { code: 'fixture.object', summary: 'Partita football-data.org non valida.' };
+  }
+  if (!Number.isInteger(item.id) || item.id <= 0) {
+    return { code: 'fixture.id', summary: 'Identificativo partita non valido.' };
+  }
+  if (!Number.isInteger(item.matchday) || item.matchday <= 0) {
+    return { code: 'fixture.matchday', summary: 'Giornata partita non valida.' };
+  }
+  if (!item.utcDate || Number.isNaN(Date.parse(item.utcDate))) {
+    return { code: 'fixture.utc_date', summary: 'Data UTC partita non valida.' };
+  }
+  for (const team of [item.homeTeam, item.awayTeam]) {
+    if (!team || !Number.isInteger(team.id) || team.id <= 0 || !team.name?.trim()) {
+      return { code: 'fixture.team', summary: 'Squadra partita non valida.' };
+    }
+  }
+  if (!item.score || !item.score.fullTime) {
+    return { code: 'fixture.score', summary: 'Punteggio partita non valido.' };
+  }
+  for (const score of [item.score.fullTime.home, item.score.fullTime.away]) {
+    if (score !== null && (!Number.isInteger(score) || score < 0)) {
+      return { code: 'fixture.score_value', summary: 'Valore punteggio non valido.' };
+    }
+  }
+  try {
+    normalizeFootballDataStatus(item.status);
+  } catch {
+    return { code: 'fixture.status', summary: 'Stato partita non riconosciuto.' };
+  }
+  return null;
+}
+
+function normalizeFootballDataStatus(status: string) {
+  const statuses: Record<string, string> = {
+    SCHEDULED: 'NS', TIMED: 'NS', IN_PLAY: 'LIVE', PAUSED: 'HT',
+    FINISHED: 'FT', POSTPONED: 'PST', SUSPENDED: 'SUSP',
+    CANCELLED: 'CANC', AWARDED: 'AWD',
+  };
+  const normalized = statuses[String(status).toUpperCase()];
+  if (!normalized) throw new Error(`Stato football-data.org non supportato: ${status}.`);
+  return normalized;
 }
 
 async function syncFixturePlayers(
@@ -1224,14 +1454,14 @@ async function startRun(
   workerToken: string,
 ): Promise<ProviderSyncRun> {
   let result = await supabase.rpc(
-    'start_provider_sync_run_guarded_v2',
+    'start_provider_sync_run_guarded_v3',
     { p_request: payload, p_lease_token: workerToken },
   );
 
   if (result.error && isMissingRpcError(result.error.message)) {
     result = await supabase.rpc(
-      'start_provider_sync_run_guarded_v1',
-      { p_request: payload },
+      'start_provider_sync_run_guarded_v2',
+      { p_request: payload, p_lease_token: workerToken },
     );
   }
   if (result.error) {

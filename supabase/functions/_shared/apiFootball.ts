@@ -45,8 +45,6 @@ type ProviderContractIssue = {
 };
 
 export class ProviderContractError extends Error {
-  readonly contractVersion = PROVIDER_PAYLOAD_CONTRACT_VERSION;
-
   constructor(
     readonly scope: string,
     readonly code: string,
@@ -54,6 +52,7 @@ export class ProviderContractError extends Error {
     readonly payloadFingerprint: string,
     readonly payloadSize: number,
     summary: string,
+    readonly contractVersion = PROVIDER_PAYLOAD_CONTRACT_VERSION,
   ) {
     super(summary);
     this.name = 'ProviderContractError';
@@ -67,6 +66,7 @@ export async function createProviderContractError(
   summary: string,
   payload: unknown,
   itemIndex: number | null = null,
+  contractVersion = PROVIDER_PAYLOAD_CONTRACT_VERSION,
 ): Promise<ProviderContractError> {
   const serialized = serializePayload(payload);
   const encoded = new TextEncoder().encode(serialized);
@@ -82,6 +82,7 @@ export async function createProviderContractError(
     fingerprint,
     encoded.byteLength,
     sanitizeSummary(summary),
+    contractVersion,
   );
 }
 

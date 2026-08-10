@@ -12,7 +12,16 @@ export type FootballDataEnvelope<T> = {
   quota: ProviderQuotaMetadata;
 };
 
-export class FootballDataClient {
+export interface FootballDataReader {
+  readonly provider: string;
+  get<T>(
+    path: string,
+    parameters: Record<string, string | number>,
+    options?: ProviderRequestOptions,
+  ): Promise<FootballDataEnvelope<T>>;
+}
+
+export class FootballDataClient implements FootballDataReader {
   readonly provider = 'football-data';
 
   constructor(private readonly apiToken: string) {}

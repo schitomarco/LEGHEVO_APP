@@ -24,9 +24,9 @@ Supabase e non contattano mai i provider.
 
 ## Responsabilità
 
-- `football-data`: competizioni, club, calendario, orari, risultati e
-  classifiche non live. È predisposto l'adapter, ma resta disattivato finché il
-  relativo secret server-side non viene configurato e collaudato su staging.
+- `football-data`: calendario, orari e risultati non live della Serie A. Il
+  percorso protetto è distribuito sullo staging, ma resta senza traffico finché
+  il secret server-side non viene configurato e collaudato.
 - `api-football`: catalogo giocatori, rose, formazioni, eventi e statistiche
   individuali. Il worker esistente usa attualmente `/players`, `/fixtures` e
   `/fixtures/players`.
@@ -53,6 +53,7 @@ impediscono la chiamata esterna.
 | Catalogo giocatori | P2 | 24 ore |
 | Calendario/lifecycle | P1 | 1 ora |
 | Statistiche finali partita | P0 | 5 minuti |
+| Calendario football-data.org | P2 | 6 ore |
 
 Lo scheduler ridotto interroga il calendario una volta l'ora, il catalogo una
 volta a settimana e le statistiche soltanto per partite finali senza fotografia
@@ -91,6 +92,11 @@ Prima dell'attivazione servono:
 4. ingestion tramite lo staging atomico già esistente;
 5. test di conflitto, fallback, quota esaurita e snapshot certificato;
 6. solo dopo, promozione del calendario a provider primario.
+
+La migrazione `161` e la versione 7 del worker introducono il run
+provider-aware. `football-data` è accettato esclusivamente con
+`sync-fixtures`; richieste per giocatori o voti vengono respinte prima della
+chiamata esterna. Non è stato attivato alcun cron automatico.
 
 La produzione resta esclusa fino a un'autorizzazione esplicita e a una nuova
 release candidate validata.

@@ -3,6 +3,10 @@ import type {
   ApiFootballEnvelope,
   ApiFootballReader,
 } from './apiFootball.ts';
+import type {
+  FootballDataEnvelope,
+  FootballDataReader,
+} from './footballData.ts';
 import {
   ProviderQuotaError,
   type ProviderPriority,
@@ -19,7 +23,7 @@ type BudgetClaim = {
 
 type CacheRead<T> = {
   cacheHit: boolean;
-  payload?: ApiFootballEnvelope<T>;
+  payload?: T;
 };
 
 const DEFAULT_OPTIONS: Record<string, ProviderRequestOptions> = {
@@ -228,6 +232,124 @@ export class QuotaCachedApiFootballClient implements ApiFootballReader {
       },
     );
     if (error) {
+      throw error;
+    }
+  }
+}
+
+const FOOTBALL_DATA_OPTIONS: Record<string, ProviderRequestOptions> = {
+  '/competitions/SA/matches': {
+    priority: 'P2',
+    ttlSeconds: 6 * 60 * 60,
+    reasonCode: 'reference-fixture-schedule',
+  },
+};
+
+export class QuotaCachedFootballDataClient implements FootballDataReader {
+  readonly provider = 'football-data';
+
+  constructor(
+    private readonly supabase: SupabaseClient,
+    private readonly upstream: FootballDataReader,
+    private readonly currentRunId: () => string | null,
+  ) {}
+
+  async get<T>(
+    path: string,
+    parameters: Record<string, string | number>,
+    options = FOOTBALL_DATA_OPTIONS[path],
+  ): Promise<FootballDataEnvelope<T>> {
+    if (!options) throw new Error(`Policy cache/quota assente per ${path}.`);
+    assertRequestOptions(options);
+    const requestHash = await sha256Hex(
+      stableProviderRequestHashInput(this.provider, path, parameters),
+    );
+    const { data: cachedData, error: cacheError } = await this.supabase.rpc(
+      'read_provider_response_cache_v1',
+      { p_provider: this.provider, p_endpoint: path, p_request_hash: requestHash },
+    );
+    if (cacheError) throw cacheError;
+    const cached = (cachedData ?? { cacheHit: false }) as CacheRead<FootballDataEnvelope<T>>;
+    if (cached.cacheHit && cached.payload) {
+      const { error } = await this.supabase.rpc('record_provider_cache_hit_v1', {
+        p_provider: this.provider,
+        p_endpoint: path,
+        p_request_hash: requestHash,
+        p_priority: options.priority,
+        p_run_id: this.currentRunId(),
+        p_reason_code: options.reasonCode ?? 'scheduled-sync',
+        p_retry_no: options.retryNo ?? 0,
+        p_fallback_provider: options.fallbackProvider ?? null,
+        p_request_context: parameters,
+      });
+      if (error) throw error;
+      return cached.payload;
+    }
+
+    const { data: claimData, error: claimError } = await this.supabase.rpc(
+      'claim_provider_request_budget_v2',
+      {
+        p_provider: this.provider,
+        p_endpoint: path,
+        p_request_hash: requestHash,
+        p_priority: options.priority,
+        p_run_id: this.currentRunId(),
+        p_reason_code: options.reasonCode ?? 'scheduled-sync',
+        p_retry_no: options.retryNo ?? 0,
+        p_fallback_provider: options.fallbackProvider ?? null,
+        p_request_context: parameters,
+      },
+    );
+    if (claimError) throw claimError;
+    const claim = (claimData ?? {}) as Partial<BudgetClaim>;
+    if (typeof claim.allowed !== 'boolean' || !claim.requestId) {
+      throw new Error('Risposta del quota manager provider non valida.');
+    }
+    if (!claim.allowed) {
+      throw new ProviderQuotaError(
+        this.provider,
+        options.priority,
+        Number(claim.remainingUnits) || 0,
+      );
+    }
+
+    try {
+      const envelope = await this.upstream.get<T>(path, parameters, options);
+      const { error: writeError } = await this.supabase.rpc(
+        'write_provider_response_cache_v1',
+        {
+          p_provider: this.provider,
+          p_endpoint: path,
+          p_request_hash: requestHash,
+          p_payload: envelope,
+          p_ttl_seconds: options.ttlSeconds,
+          p_etag: envelope.quota.etag,
+          p_last_modified: envelope.quota.lastModified,
+        },
+      );
+      if (writeError) throw writeError;
+      const { error: finishError } = await this.supabase.rpc(
+        'finish_provider_request_v1',
+        {
+          p_request_id: String(claim.requestId),
+          p_succeeded: true,
+          p_http_status: envelope.quota.httpStatus,
+          p_provider_reported_limit: envelope.quota.dailyLimit,
+          p_provider_reported_remaining: envelope.quota.dailyRemaining,
+          p_error_code: null,
+        },
+      );
+      if (finishError) throw finishError;
+      return envelope;
+    } catch (error) {
+      await this.supabase.rpc('finish_provider_request_v1', {
+        p_request_id: String(claim.requestId),
+        p_succeeded: false,
+        p_http_status: null,
+        p_provider_reported_limit: null,
+        p_provider_reported_remaining: null,
+        p_error_code: error instanceof Error ? error.name : 'provider.request_failed',
+      });
       throw error;
     }
   }

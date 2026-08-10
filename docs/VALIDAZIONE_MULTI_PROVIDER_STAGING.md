@@ -49,10 +49,28 @@ come previsto dal contratto HIGH/CRITICAL.
 - `sync-football-data`: deploy accettato, stato `ACTIVE`, versione 6.
 - Nessun nuovo secret scritto o mostrato.
 
+## Fase 2: percorso football-data.org
+
+- Migrazione `161`: applicata e verificata prima in locale.
+- Test transazionale del run provider-aware: lease e fencing acquisiti, poi
+  rollback completo.
+- Test negativo: giocatori via `football-data` respinti; il provider è
+  autorizzato soltanto per `sync-fixtures`.
+- Gateway con cache-first, quota manager, ledger e TTL calendario di 6 ore.
+- Validazione fail-closed di ID, giornata, data UTC, squadre, punteggio e stato.
+- Export Expo iOS/Android e typecheck: superati nuovamente.
+- Dry-run staging: proposta esclusivamente la migrazione 161; nessun seed e
+  nessun ruolo.
+- Cronologia staging allineata fino alla 161.
+- `sync-football-data`: stato `ACTIVE`, versione 8 (la versione 7 è stata
+  immediatamente sostituita dall'irrobustimento finale del contratto payload).
+- Secret `FOOTBALL_DATA_API_KEY`: assente; nessun traffico o cron del nuovo
+  provider è stato attivato.
+
 ## Gate ancora aperti
 
 - Configurazione del secret staging `FOOTBALL_DATA_API_KEY`.
-- Ingestion football-data.org attraverso staging/pubblicazione certificata.
+- Aggiunta del secret e smoke test reale di ingestion football-data.org.
 - Mapping verificato dei club Serie A tra i due provider.
 - Smoke test reale con una chiamata autorizzata e verifica di cache hit.
 - Collaudo del Centro Operativo su una build collegata allo staging.

@@ -1,5 +1,11 @@
 # In sviluppo — Fondazione Free/Premium
 
+- distribuito sullo staging il percorso calendario football-data.org con run
+  provider-aware, lease/fencing, staging atomico, contratto payload, cache e
+  quota; resta inattivo finché non viene configurata la chiave server-side;
+- limitato football-data.org al solo calendario Serie A: catalogo giocatori,
+  voti e statistiche individuali restano su API-Football;
+
 - introdotta la fondazione multi-provider per API-Football Free e
   football-data.org Free, mantenendo Supabase come fonte autorevole;
 - aggiunti quota manager configurabile, riserva P0/P1, cache TTL server-side,
