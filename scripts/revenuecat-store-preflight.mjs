@@ -32,6 +32,26 @@ if (apiKey.startsWith('test_')) {
   fail('una chiave Test Store non può entrare nella build store.');
 }
 
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL?.trim();
+const supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim();
+
+if (!supabaseUrl) {
+  fail('EXPO_PUBLIC_SUPABASE_URL deve essere configurata.');
+}
+
+try {
+  const parsedSupabaseUrl = new URL(supabaseUrl);
+  if (parsedSupabaseUrl.protocol !== 'https:' || !parsedSupabaseUrl.hostname) {
+    fail('EXPO_PUBLIC_SUPABASE_URL deve essere un URL HTTPS valido.');
+  }
+} catch {
+  fail('EXPO_PUBLIC_SUPABASE_URL deve essere un URL HTTPS valido.');
+}
+
+if (!supabasePublishableKey) {
+  fail('EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY deve essere configurata.');
+}
+
 console.log(
-  `REVENUECAT STORE PRE-FLIGHT SUPERATO: ${platform}, configurazione store fail-closed.`,
+  `STORE PRE-FLIGHT SUPERATO: ${platform}, RevenueCat e Supabase configurati in modalità fail-closed.`,
 );
