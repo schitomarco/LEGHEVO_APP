@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.send-push-notifications]
 verify_jwt = false
+
+[functions.revenuecat-webhook]
+verify_jwt = false

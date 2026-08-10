@@ -52,10 +52,20 @@ la proiezione necessaria all’interfaccia, senza transazioni o payload privati.
 
 ## Stato di attivazione
 
-La fondazione applicativa e database è pronta. `purchasesEnabled` resta `false`:
-la schermata Premium non può effettuare addebiti finché prodotti, credenziali,
-webhook e collaudo sandbox non sono completi. Gli annunci reali restano assenti
-finché AdMob, consenso e documenti legali aggiornati non sono pubblicati.
+La fondazione applicativa e database è pronta. Il Test Store RevenueCat è
+collegato soltanto alle build `development` con una chiave pubblica `test_` e non
+può effettuare addebiti reali. Acquisto, ripristino e prezzi vengono letti
+dall'offerta corrente `Premium`.
+
+La configurazione Test Store richiede inoltre `__DEV__`: una build TestFlight o
+release non inizializza mai la chiave `test_`, anche se l'ambiente EAS di staging
+la contiene accidentalmente.
+
+Il webhook `revenuecat-webhook` verifica un header privato, accetta esclusivamente
+eventi dell'entitlement `premium` e registra gli aggiornamenti usando il ruolo
+server. Apple e Google restano disabilitati fino al collaudo completo e alla
+preparazione della versione 1.0.0. Gli annunci reali restano assenti finché
+AdMob, consenso e documenti legali aggiornati non sono pubblicati.
 
 ## Collaudo minimo prima dell’attivazione
 

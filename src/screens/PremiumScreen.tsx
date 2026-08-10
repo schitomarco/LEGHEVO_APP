@@ -32,6 +32,27 @@ export function PremiumScreen({
 }: Props) {
   const [billingPeriod, setBillingPeriod] =
     useState<CommercialBillingPeriod>('annual');
+  const [busyAction, setBusyAction] = useState<'purchase' | 'restore' | null>(null);
+
+  const purchase = async () => {
+    if (busyAction) return;
+    setBusyAction('purchase');
+    try {
+      await onPurchase(billingPeriod);
+    } finally {
+      setBusyAction(null);
+    }
+  };
+
+  const restore = async () => {
+    if (busyAction) return;
+    setBusyAction('restore');
+    try {
+      await onRestore();
+    } finally {
+      setBusyAction(null);
+    }
+  };
 
   return (
     <ScrollView
@@ -86,17 +107,19 @@ export function PremiumScreen({
           </View>
         ) : (
           <Pressable
-            disabled={!entitlement.purchasesEnabled || isDemo}
-            onPress={() => void onPurchase(billingPeriod)}
+            disabled={!entitlement.purchasesEnabled || isDemo || busyAction !== null}
+            onPress={() => void purchase()}
             style={[
               styles.purchaseButton,
-              (!entitlement.purchasesEnabled || isDemo) &&
+              (!entitlement.purchasesEnabled || isDemo || busyAction !== null) &&
                 styles.purchaseButtonDisabled,
             ]}
           >
             <Text style={styles.purchaseText}>
-              {entitlement.purchasesEnabled
-                ? 'ATTIVA PREMIUM'
+              {busyAction === 'purchase'
+                ? 'ELABORAZIONE…'
+                : entitlement.purchasesEnabled
+                ? 'PROVA PREMIUM NEL TEST STORE'
                 : 'ACQUISTI IN PREPARAZIONE'}
             </Text>
           </Pressable>
@@ -105,10 +128,10 @@ export function PremiumScreen({
 
       {!entitlement.purchasesEnabled && !entitlement.isPremium ? (
         <View style={styles.notice}>
-          <Text style={styles.noticeTitle}>Nessun addebito attivo</Text>
+          <Text style={styles.noticeTitle}>Nessun addebito reale attivo</Text>
           <Text style={styles.noticeBody}>
-            La schermata è pronta per il collaudo. Collegheremo Apple e Google
-            prima della versione 1.0.0.
+            Il Test Store simula gli abbonamenti. Collegheremo Apple e Google
+            soltanto prima della versione 1.0.0.
           </Text>
         </View>
       ) : null}
@@ -116,11 +139,13 @@ export function PremiumScreen({
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <Pressable
-        disabled={!entitlement.purchasesEnabled || isDemo}
-        onPress={() => void onRestore()}
+        disabled={!entitlement.purchasesEnabled || isDemo || busyAction !== null}
+        onPress={() => void restore()}
         style={styles.restoreButton}
       >
-        <Text style={styles.restoreText}>Ripristina acquisti</Text>
+        <Text style={styles.restoreText}>
+          {busyAction === 'restore' ? 'Ripristino…' : 'Ripristina acquisti'}
+        </Text>
       </Pressable>
 
       <Text style={styles.legal}>

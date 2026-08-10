@@ -38,7 +38,7 @@ export function useCommercialEntitlement(
     if (!silent) {
       setLoading(true);
     }
-    const outcome = await loadCommercialEntitlement();
+    const outcome = await loadCommercialEntitlement(userId);
     if (outcome.data) {
       setEntitlement(outcome.data);
     }
@@ -63,15 +63,29 @@ export function useCommercialEntitlement(
   }, [isDemo, refresh, userId]);
 
   const purchase = async (period: CommercialBillingPeriod) => {
-    const outcome = await startPremiumPurchase(period);
+    if (!userId) {
+      const outcome = { error: 'Accedi al tuo account prima di attivare Premium.' };
+      setError(outcome.error);
+      return outcome;
+    }
+    setError('');
+    const outcome = await startPremiumPurchase(userId, period);
     if (outcome.error) {
       setError(outcome.error);
+    } else {
+      await refresh(true);
     }
     return outcome;
   };
 
   const restore = async () => {
-    const outcome = await restorePremiumPurchases();
+    if (!userId) {
+      const outcome = { error: 'Accedi al tuo account prima di ripristinare gli acquisti.' };
+      setError(outcome.error);
+      return outcome;
+    }
+    setError('');
+    const outcome = await restorePremiumPurchases(userId);
     if (outcome.error) {
       setError(outcome.error);
     } else {

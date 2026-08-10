@@ -1,4 +1,10 @@
 import { supabase } from '../lib/supabase';
+import {
+  isRevenueCatTestStoreEnabled,
+  loadRevenueCatSnapshot,
+  purchaseRevenueCatPackage,
+  restoreRevenueCatPurchases,
+} from './revenueCatService';
 
 export type CommercialTier = 'free' | 'premium';
 export type CommercialBillingPeriod = 'monthly' | 'annual';
@@ -61,7 +67,7 @@ export const DEMO_COMMERCIAL_ENTITLEMENT: CommercialEntitlement = {
   adsEnabled: false,
 };
 
-export async function loadCommercialEntitlement(): Promise<{
+export async function loadCommercialEntitlement(userId: string): Promise<{
   data?: CommercialEntitlement;
   error?: string;
 }> {
@@ -73,35 +79,83 @@ export async function loadCommercialEntitlement(): Promise<{
     'get_my_commercial_entitlement_v1',
   );
 
+  let backendEntitlement = FREE_COMMERCIAL_ENTITLEMENT;
+  let backendWarning = '';
   if (error) {
     if (
       error.message.includes('get_my_commercial_entitlement_v1') ||
       error.message.toLowerCase().includes('schema cache')
     ) {
-      return {
-        data: FREE_COMMERCIAL_ENTITLEMENT,
-        error: 'Il profilo Premium sarà disponibile dopo l’aggiornamento del database.',
-      };
+      backendWarning =
+        'Il profilo Premium sarà completo dopo l’aggiornamento del database di staging.';
+    } else {
+      return { error: 'Non riesco a verificare il piano del tuo account.' };
     }
-    return { error: 'Non riesco a verificare il piano del tuo account.' };
+  } else {
+    backendEntitlement = normalizeCommercialEntitlement(data);
   }
 
-  return { data: normalizeCommercialEntitlement(data) };
+  if (!isRevenueCatTestStoreEnabled()) {
+    return { data: backendEntitlement, error: backendWarning || undefined };
+  }
+
+  try {
+    const revenueCat = await loadRevenueCatSnapshot(userId);
+    return {
+      data: mergeRevenueCatSnapshot(backendEntitlement, revenueCat),
+      error: backendWarning || undefined,
+    };
+  } catch {
+    return {
+      data: { ...backendEntitlement, purchasesEnabled: false },
+      error: 'Non riesco a collegarmi al Test Store RevenueCat.',
+    };
+  }
 }
 
 export async function startPremiumPurchase(
-  _period: CommercialBillingPeriod,
+  userId: string,
+  period: CommercialBillingPeriod,
 ): Promise<{ error?: string }> {
-  return {
-    error:
-      'Gli acquisti sono ancora in modalità preparazione. Nessun addebito è stato effettuato.',
-  };
+  const result = await purchaseRevenueCatPackage(userId, period);
+  return { error: result.error };
 }
 
-export async function restorePremiumPurchases(): Promise<{ error?: string }> {
+export async function restorePremiumPurchases(
+  userId: string,
+): Promise<{ error?: string }> {
+  const result = await restoreRevenueCatPurchases(userId);
+  return { error: result.error };
+}
+
+function mergeRevenueCatSnapshot(
+  backend: CommercialEntitlement,
+  revenueCat: Awaited<ReturnType<typeof loadRevenueCatSnapshot>>,
+): CommercialEntitlement {
+  const isPremium = backend.isPremium || revenueCat.isPremium;
   return {
-    error:
-      'Il ripristino sarà disponibile quando collegheremo Apple e Google a RevenueCat.',
+    ...backend,
+    tier: isPremium ? 'premium' : 'free',
+    status: isPremium ? 'active' : backend.status,
+    isPremium,
+    store: revenueCat.isPremium ? revenueCat.store : backend.store,
+    productId: revenueCat.isPremium ? revenueCat.productId : backend.productId,
+    environment: revenueCat.isPremium
+      ? revenueCat.environment
+      : backend.environment,
+    currentPeriodEndsAt: revenueCat.isPremium
+      ? revenueCat.currentPeriodEndsAt
+      : backend.currentPeriodEndsAt,
+    willRenew: revenueCat.isPremium ? revenueCat.willRenew : backend.willRenew,
+    maxOwnedLeagues: isPremium ? null : backend.maxOwnedLeagues,
+    maxParticipantsPerLeague: isPremium
+      ? 20
+      : backend.maxParticipantsPerLeague,
+    adsEnabled: !isPremium,
+    purchasesEnabled: revenueCat.configured && revenueCat.offeringAvailable,
+    monthlyPriceLabel:
+      revenueCat.monthlyPriceLabel ?? backend.monthlyPriceLabel,
+    annualPriceLabel: revenueCat.annualPriceLabel ?? backend.annualPriceLabel,
   };
 }
 

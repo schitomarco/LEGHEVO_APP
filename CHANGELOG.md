@@ -10,6 +10,10 @@
 - schermata Premium e selezione partecipanti coerente con il piano;
 - acquisti e annunci mantenuti disattivati fino al completamento delle
   integrazioni RevenueCat, Apple, Google e AdMob.
+- RevenueCat Test Store collegato alle sole build development con acquisto
+  mensile/annuale, ripristino e identità basata sull'UUID Supabase;
+- webhook RevenueCat autenticato per sincronizzare Premium nel database senza
+  affidarsi allo stato modificabile del client.
 
 # v0.62.43 — Sigillo finale di production readiness e go-live controllato
 
