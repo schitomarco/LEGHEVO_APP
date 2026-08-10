@@ -5,6 +5,9 @@
   quota; resta inattivo finché non viene configurata la chiave server-side;
 - limitato football-data.org al solo calendario Serie A: catalogo giocatori,
   voti e statistiche individuali restano su API-Football;
+- collaudato sullo staging il calendario reale Serie A con pubblicazione
+  atomica di 7 fixture, lifecycle applicato, identità canoniche e cache hit a
+  costo quota zero; nessun cron automatico attivato;
 
 - introdotta la fondazione multi-provider per API-Football Free e
   football-data.org Free, mantenendo Supabase come fonte autorevole;

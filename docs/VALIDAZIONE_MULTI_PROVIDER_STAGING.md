@@ -62,17 +62,26 @@ come previsto dal contratto HIGH/CRITICAL.
 - Dry-run staging: proposta esclusivamente la migrazione 161; nessun seed e
   nessun ruolo.
 - Cronologia staging allineata fino alla 161.
-- `sync-football-data`: stato `ACTIVE`, versione 8 (la versione 7 è stata
-  immediatamente sostituita dall'irrobustimento finale del contratto payload).
-- Secret `FOOTBALL_DATA_API_KEY`: assente; nessun traffico o cron del nuovo
-  provider è stato attivato.
+- `sync-football-data`: stato `ACTIVE`, versione 10.
+- Secret `FOOTBALL_DATA_API_KEY`: configurato sul solo staging; durante la
+  verifica sono stati letti soltanto nome e digest.
+- Smoke diretto provider: HTTP 200, competizione `SA`, 10 partite e campi
+  contratto attesi.
+- Migrazione `162`: ingresso atomico ristretto alle sole fixture
+  `football-data`; dry-run con una sola migrazione, nessun seed/ruolo.
+- Smoke end-to-end staging del 24 maggio 2026:
+  - run `66de5af7-9d20-4eb5-9815-1e3c3e3d9e8a` completato;
+  - 7 fixture finali pubblicate in un unico commit;
+  - lifecycle `applied`, nessuna pubblicazione superseded;
+  - 7/7 fixture collegate a un'identità canonica;
+  - cache hit certificata, zero unità quota e chiamata esterna evitata.
+- Nessun cron del nuovo provider è stato attivato.
 
 ## Gate ancora aperti
 
-- Configurazione del secret staging `FOOTBALL_DATA_API_KEY`.
-- Aggiunta del secret e smoke test reale di ingestion football-data.org.
 - Mapping verificato dei club Serie A tra i due provider.
-- Smoke test reale con una chiamata autorizzata e verifica di cache hit.
+- Preservazione esplicita del provider nelle richieste della coda recovery,
+  prima di abilitare recuperi automatici football-data.
 - Collaudo del Centro Operativo su una build collegata allo staging.
 - Nuovo contratto release e nuova fingerprint: il preflight `0.62.49` resta
   intenzionalmente chiuso perché non deve essere modificato retroattivamente.

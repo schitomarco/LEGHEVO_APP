@@ -856,7 +856,7 @@ async function syncFootballDataFixtures(
     throw new Error('La data deve essere nel formato YYYY-MM-DD.');
   }
   const envelope = await api.get<FootballDataFixture>(
-    '/competitions/SA/matches',
+    '/competitions/2019/matches',
     { season, dateFrom: date, dateTo: date },
   );
   const fixtures = envelope.response;
@@ -864,7 +864,7 @@ async function syncFootballDataFixtures(
     const issue = validateFootballDataFixture(fixtures[index]);
     if (issue) {
       throw await createProviderContractError(
-        'response:/competitions/SA/matches',
+        'response:/competitions/2019/matches',
         issue.code,
         issue.summary,
         envelope.raw,
@@ -1604,6 +1604,41 @@ async function applyProviderSyncWrite(
     p_operation: operation,
     p_payload: payload,
   };
+  const footballDataFixtures = operation === 'upsert-provider-fixtures'
+    && Array.isArray(payload)
+    && payload.length > 0
+    && payload.every((item) =>
+      Boolean(item)
+      && typeof item === 'object'
+      && (item as Record<string, unknown>).provider === FOOTBALL_DATA_PROVIDER
+    );
+  if (footballDataFixtures) {
+    const dedicated = await supabase.rpc(
+      'stage_football_data_fixture_write_guarded_v1',
+      {
+        p_run_id: run.id,
+        p_lease_token: run.leaseToken,
+        p_payload: payload,
+      },
+    );
+    if (dedicated.error) {
+      if (isProviderPayloadContractMessage(dedicated.error.message)) {
+        throw await createProviderContractError(
+          `write:${operation}`,
+          extractProviderPayloadContractCode(dedicated.error.message),
+          dedicated.error.message,
+          payload,
+          null,
+          'football-data-v4/leghevo-contract-v1',
+        );
+      }
+      throw dedicated.error;
+    }
+    if (!dedicated.data || typeof dedicated.data !== 'object') {
+      throw new Error('Risposta staging football-data non valida.');
+    }
+    return dedicated.data as Record<string, unknown>;
+  }
   let result = await supabase.rpc(
     'stage_provider_sync_write_guarded_v1',
     parameters,

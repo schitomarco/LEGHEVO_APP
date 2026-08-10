@@ -238,7 +238,7 @@ export class QuotaCachedApiFootballClient implements ApiFootballReader {
 }
 
 const FOOTBALL_DATA_OPTIONS: Record<string, ProviderRequestOptions> = {
-  '/competitions/SA/matches': {
+  '/competitions/2019/matches': {
     priority: 'P2',
     ttlSeconds: 6 * 60 * 60,
     reasonCode: 'reference-fixture-schedule',
