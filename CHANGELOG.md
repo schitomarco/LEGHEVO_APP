@@ -14,6 +14,8 @@
   mensile/annuale, ripristino e identità basata sull'UUID Supabase;
 - webhook RevenueCat autenticato per sincronizzare Premium nel database senza
   affidarsi allo stato modificabile del client.
+- ripristino acquisti con esito esplicito e aggiornamento Supabase in background,
+  così un ritardo di rete non lascia la schermata bloccata su `Ripristino…`.
 
 # v0.62.43 — Sigillo finale di production readiness e go-live controllato
 

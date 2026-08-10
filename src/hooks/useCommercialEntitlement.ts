@@ -73,14 +73,17 @@ export function useCommercialEntitlement(
     if (outcome.error) {
       setError(outcome.error);
     } else {
-      await refresh(true);
+      void refresh(true);
     }
     return outcome;
   };
 
   const restore = async () => {
     if (!userId) {
-      const outcome = { error: 'Accedi al tuo account prima di ripristinare gli acquisti.' };
+      const outcome = {
+        restored: false,
+        error: 'Accedi al tuo account prima di ripristinare gli acquisti.',
+      };
       setError(outcome.error);
       return outcome;
     }
@@ -89,7 +92,7 @@ export function useCommercialEntitlement(
     if (outcome.error) {
       setError(outcome.error);
     } else {
-      await refresh(true);
+      void refresh(true);
     }
     return outcome;
   };

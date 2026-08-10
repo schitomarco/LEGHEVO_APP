@@ -123,9 +123,12 @@ export async function startPremiumPurchase(
 
 export async function restorePremiumPurchases(
   userId: string,
-): Promise<{ error?: string }> {
+): Promise<{ restored: boolean; error?: string }> {
   const result = await restoreRevenueCatPurchases(userId);
-  return { error: result.error };
+  return {
+    restored: result.snapshot?.isPremium === true,
+    error: result.error,
+  };
 }
 
 function mergeRevenueCatSnapshot(

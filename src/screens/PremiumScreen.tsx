@@ -12,7 +12,7 @@ type Props = {
   isDemo: boolean;
   onBack: () => void;
   onPurchase: (period: CommercialBillingPeriod) => Promise<{ error?: string }>;
-  onRestore: () => Promise<{ error?: string }>;
+  onRestore: () => Promise<{ restored: boolean; error?: string }>;
 };
 
 const features = [
@@ -33,6 +33,7 @@ export function PremiumScreen({
   const [billingPeriod, setBillingPeriod] =
     useState<CommercialBillingPeriod>('annual');
   const [busyAction, setBusyAction] = useState<'purchase' | 'restore' | null>(null);
+  const [restoreMessage, setRestoreMessage] = useState('');
 
   const purchase = async () => {
     if (busyAction) return;
@@ -46,9 +47,17 @@ export function PremiumScreen({
 
   const restore = async () => {
     if (busyAction) return;
+    setRestoreMessage('');
     setBusyAction('restore');
     try {
-      await onRestore();
+      const outcome = await onRestore();
+      if (!outcome.error) {
+        setRestoreMessage(
+          outcome.restored
+            ? 'Acquisti ripristinati. Premium è attivo su questo account.'
+            : 'Non risultano acquisti Premium da ripristinare per questo account.',
+        );
+      }
     } finally {
       setBusyAction(null);
     }
@@ -137,6 +146,11 @@ export function PremiumScreen({
       ) : null}
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
+      {restoreMessage ? (
+        <Text accessibilityLiveRegion="polite" style={styles.restoreMessage}>
+          {restoreMessage}
+        </Text>
+      ) : null}
 
       <Pressable
         disabled={!entitlement.purchasesEnabled || isDemo || busyAction !== null}
@@ -282,5 +296,12 @@ const styles = StyleSheet.create({
   error: { color: '#FFB7B7', fontSize: 13, lineHeight: 18, marginTop: 16 },
   restoreButton: { alignItems: 'center', paddingVertical: 18 },
   restoreText: { color: colors.warmWhite, fontSize: 13, fontWeight: '800' },
+  restoreMessage: {
+    color: colors.lime,
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 16,
+    textAlign: 'center',
+  },
   legal: { color: colors.mutedLight, fontSize: 10, lineHeight: 16, textAlign: 'center' },
 });
