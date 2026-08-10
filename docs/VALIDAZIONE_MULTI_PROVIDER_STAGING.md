@@ -62,7 +62,7 @@ come previsto dal contratto HIGH/CRITICAL.
 - Dry-run staging: proposta esclusivamente la migrazione 161; nessun seed e
   nessun ruolo.
 - Cronologia staging allineata fino alla 161.
-- `sync-football-data`: stato `ACTIVE`, versione 10.
+- `sync-football-data`: stato `ACTIVE`, versione 11.
 - Secret `FOOTBALL_DATA_API_KEY`: configurato sul solo staging; durante la
   verifica sono stati letti soltanto nome e digest.
 - Smoke diretto provider: HTTP 200, competizione `SA`, 10 partite e campi
