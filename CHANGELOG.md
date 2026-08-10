@@ -20,6 +20,9 @@
 - aggiunto un registro service-role-only di 12 coppie club Serie A verificate
   tra football-data e API-Football, tutte riconciliate sullo staging allo
   stesso UUID canonico, con quarantena fail-closed per eventuali mismatch;
+- esteso il registro a 17 coppie confermate dopo una giornata completa da 10
+  fixture football-data; restano esplicitamente non associati Pisa, Cremonese
+  e Sassuolo finché gli ID API-Football correnti non saranno verificati;
 
 - introdotta la fondazione multi-provider per API-Football Free e
   football-data.org Free, mantenendo Supabase come fonte autorevole;

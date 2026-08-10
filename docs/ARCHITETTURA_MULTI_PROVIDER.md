@@ -73,7 +73,7 @@ La migrazione `164` aggiunge `verified_club_provider_links`, un registro
 esplicito delle coppie di ID club controllate sui cataloghi ufficiali. La
 riconciliazione è riservata al service role: collega gli ID allo stesso UUID
 solo quando la prova è coerente; un'identità preesistente diversa viene
-quarantinata e registrata come conflitto. Sullo staging sono confermate 12
+quarantinata e registrata come conflitto. Sullo staging sono confermate 17
 coppie Serie A senza conflitti. I club rimanenti devono essere aggiunti con
 evidenza esplicita prima di attivare il calendario automatico.
 
@@ -96,8 +96,8 @@ Prima dell'attivazione automatica servono:
 
 1. secret server-side `FOOTBALL_DATA_API_KEY` su staging (completato);
 2. collaudo dei payload Serie A reali contro l'adapter (completato);
-3. mapping verificato dei club fra i due provider (12 coppie confermate; resta
-   da completare il catalogo della stagione corrente);
+3. mapping verificato dei club fra i due provider (17 coppie confermate; restano
+   Pisa, Cremonese e Sassuolo del catalogo corrente);
 4. ingestion tramite lo staging atomico già esistente;
 5. test di conflitto, fallback, quota esaurita e snapshot certificato;
 6. solo dopo, promozione del calendario a provider primario.
@@ -115,6 +115,8 @@ Il client non può scegliere o alterare il provider di un recupero già accodato
 
 La migrazione `164` riconcilia esclusivamente coppie di ID club verificate e
 mantiene fail-closed ogni mismatch tramite quarantena e conflitto autorevole.
+La migrazione `165` estende lo stesso registro ad Atalanta, Bologna, Fiorentina,
+Inter e Lazio senza cambiare il contratto di riconciliazione.
 
 La produzione resta esclusa fino a un'autorizzazione esplicita e a una nuova
 release candidate validata.

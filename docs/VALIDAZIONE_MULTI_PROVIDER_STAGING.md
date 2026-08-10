@@ -107,10 +107,25 @@ come previsto dal contratto HIGH/CRITICAL.
   conflitti e 12 UUID canonici condivisi fra i due provider.
 - Nessun cron del nuovo provider è stato attivato.
 
+## Fase 5: estensione catalogo club corrente
+
+- Sincronizzazione football-data del 17 maggio 2026: HTTP 200, 10 fixture,
+  lifecycle `applied` e 20 club della giornata canonicalizzati sullo staging.
+- Migrazione `165`: aggiunte le cinque coppie ufficiali Atalanta, Bologna,
+  Fiorentina, Inter e Lazio dal confronto football-data 2025/API-Football 2024.
+- Applicazione locale ripetuta due volte senza duplicazioni o conflitti.
+- Dry-run staging: proposta esclusivamente la migrazione 165; nessun seed,
+  nessun ruolo e migrazione legacy dei cron 004 intenzionalmente esclusa.
+- Verifica protetta finale: 17/17 link `confirmed`, zero `pending`, zero
+  conflitti e 17 UUID canonici condivisi fra i provider.
+- Restano fuori dal registro Pisa, Cremonese e Sassuolo: gli ID API-Football
+  devono essere verificati sul catalogo corrente e non verranno dedotti dal
+  solo nome.
+
 ## Gate ancora aperti
 
-- Completamento esplicito del mapping per i club della stagione corrente non
-  presenti nell'intersezione dei cataloghi gratuiti già verificata.
+- Verifica degli ID API-Football correnti di Pisa, Cremonese e Sassuolo, poi
+  completamento esplicito del mapping 20/20.
 - Collaudo del Centro Operativo su una build collegata allo staging.
 - Nuovo contratto release e nuova fingerprint: il preflight `0.62.49` resta
   intenzionalmente chiuso perché non deve essere modificato retroattivamente.
