@@ -128,7 +128,9 @@ export function PremiumScreen({
               {busyAction === 'purchase'
                 ? 'ELABORAZIONE…'
                 : entitlement.purchasesEnabled
-                ? 'PROVA PREMIUM NEL TEST STORE'
+                ? entitlement.purchaseMode === 'test'
+                  ? 'PROVA PREMIUM NEL TEST STORE'
+                  : 'ATTIVA PREMIUM'
                 : 'ACQUISTI IN PREPARAZIONE'}
             </Text>
           </Pressable>
@@ -137,10 +139,10 @@ export function PremiumScreen({
 
       {!entitlement.purchasesEnabled && !entitlement.isPremium ? (
         <View style={styles.notice}>
-          <Text style={styles.noticeTitle}>Nessun addebito reale attivo</Text>
+          <Text style={styles.noticeTitle}>Acquisti non ancora attivi</Text>
           <Text style={styles.noticeBody}>
-            Il Test Store simula gli abbonamenti. Collegheremo Apple e Google
-            soltanto prima della versione 1.0.0.
+            Apple e Google verranno abilitati dopo il collaudo sandbox completo
+            previsto per la versione 1.0.0.
           </Text>
         </View>
       ) : null}

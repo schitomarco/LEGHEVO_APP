@@ -18,15 +18,21 @@
       }
     },
     "preview": {
-      "environment": "development",
+      "environment": "preview",
       "distribution": "internal"
     },
     "testflight": {
       "extends": "production",
-      "environment": "development",
+      "environment": "preview",
+      "distribution": "store"
+    },
+    "play-testing": {
+      "extends": "production",
+      "environment": "preview",
       "distribution": "store"
     },
     "production": {
+      "environment": "production",
       "autoIncrement": true
     }
   },

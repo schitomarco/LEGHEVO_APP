@@ -1,5 +1,12 @@
 # In sviluppo — Fondazione Free/Premium
 
+- separata la configurazione RevenueCat per piattaforma: Test Store confinato
+  alle build `__DEV__`, chiavi SDK `appl_`/`goog_` richieste in modalità store
+  e inizializzazione fail-closed in caso di ambiente o chiave incompatibili;
+- isolati i profili TestFlight e Google Play testing nell'ambiente EAS
+  `preview` collegato allo staging; soltanto la build finale usa l'ambiente
+  `production`, evitando commistioni durante i collaudi sandbox della `1.0.0`;
+
 - distribuito sullo staging il percorso calendario football-data.org con run
   provider-aware, lease/fencing, staging atomico, contratto payload, cache e
   quota; resta inattivo finché non viene configurata la chiave server-side;

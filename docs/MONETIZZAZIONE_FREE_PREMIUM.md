@@ -61,6 +61,33 @@ La configurazione Test Store richiede inoltre `__DEV__`: una build TestFlight o
 release non inizializza mai la chiave `test_`, anche se l'ambiente EAS di staging
 la contiene accidentalmente.
 
+Le build TestFlight e Google Play testing usano invece la modalità `store` e
+due chiavi SDK pubbliche distinte: `EXPO_PUBLIC_REVENUECAT_IOS_API_KEY` per iOS
+e `EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY` per Android. Il selettore è
+fail-closed: iOS accetta solo una chiave `appl_`, Android solo una chiave
+`goog_`, mentre una chiave `test_` non può inizializzare una build release.
+I profili EAS `testflight` e `play-testing` usano intenzionalmente l'ambiente
+`preview`: chiavi store reali in sandbox e backend Supabase staging. Soltanto
+il profilo store finale usa l'ambiente `production` e il backend di produzione.
+
+Variabili richieste sia in EAS `preview` sia in EAS `production`, con URL e
+chiavi Supabase appartenenti al rispettivo backend:
+
+- `EXPO_PUBLIC_REVENUECAT_STORE_MODE=store`;
+- `EXPO_PUBLIC_REVENUECAT_PURCHASES_ENABLED=true` soltanto durante il collaudo
+  sandbox e dopo la configurazione completa dei prodotti;
+- `EXPO_PUBLIC_REVENUECAT_IOS_API_KEY=appl_...`;
+- `EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY=goog_...`.
+
+In `preview` gli acquisti passano dagli ambienti sandbox/test di Apple e Google;
+in `production` gli stessi prodotti vengono venduti realmente dopo
+l'approvazione degli store. L'ambiente EAS `development` resta riservato al
+Test Store RevenueCat.
+
+Le chiavi SDK pubbliche non sostituiscono le credenziali private di App Store
+Connect o Google Play, che devono restare nelle integrazioni server-side di
+RevenueCat e non devono mai essere incluse nel bundle Expo.
+
 Il webhook `revenuecat-webhook` verifica un header privato, accetta esclusivamente
 eventi dell'entitlement `premium` e registra gli aggiornamenti usando il ruolo
 server. Apple e Google restano disabilitati fino al collaudo completo e alla
@@ -77,3 +104,5 @@ AdMob, consenso e documenti legali aggiornati non sono pubblicati.
 6. Premium: più leghe e lega da 20 accettate.
 7. Pubblicità visibile solo al Free e mai prima della decisione UMP richiesta.
 8. Eliminazione account con chiusura del collegamento commerciale interno.
+9. Preflight release: modalità `store`, chiave `appl_` su iOS, chiave `goog_`
+   su Android e assenza completa di `test_` nei bundle candidati.

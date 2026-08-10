@@ -2,7 +2,7 @@
 
 ## Stato di partenza
 
-La candidata `0.62.47` e' verificata su staging e Simulator iOS. Il numero
+La candidata `0.62.49` e' verificata su staging, TestFlight e Android. Il numero
 `1.0.0` resta riservato alla release finale: non viene assegnato finche' tutti
 i gate qui sotto non sono chiusi.
 
@@ -13,6 +13,7 @@ i gate qui sotto non sono chiusi.
 - Profili EAS presenti in `eas.json`:
   - `development` per notifiche e debug su dispositivi QA;
   - `preview` per distribuzione interna;
+  - `testflight` e `play-testing` per store sandbox collegati allo staging;
   - `production` per la build candidata alla pubblicazione.
 - La versione applicativa e' letta dal repository; EAS incrementera' soltanto
   il numero interno di build per il profilo di produzione.
@@ -31,7 +32,15 @@ i gate qui sotto non sono chiusi.
    disponibile una correzione compatibile.
 6. Rieseguire preflight, test compatibilita' staging con fingerprint valida e
    alterata, e validare il piano di rollback.
-7. Solo allora: impostare `1.0.0`, calcolare una nuova fingerprint, creare una
+7. Creare e configurare gli abbonamenti reali su App Store Connect e Google
+   Play, collegarli all'entitlement RevenueCat `premium` e sostituire il Test
+   Store con le chiavi SDK pubbliche specifiche iOS/Android.
+8. Superare su entrambi gli store i test sandbox di acquisto, ripristino,
+   rinnovo, disdetta, grazia, scadenza e rimborso, verificando il webhook su
+   Supabase staging.
+9. Verificare che i bundle candidati non contengano una chiave `test_` e che
+   usino l'ambiente EAS/backend corretto per piattaforma.
+10. Solo allora: impostare `1.0.0`, calcolare una nuova fingerprint, creare una
    nuova migrazione additiva e certificare una nuova release candidata.
 
 ## Azioni che richiedono il proprietario

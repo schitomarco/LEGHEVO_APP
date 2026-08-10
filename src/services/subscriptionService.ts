@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import {
-  isRevenueCatTestStoreEnabled,
+  isRevenueCatEnabled,
   loadRevenueCatSnapshot,
   purchaseRevenueCatPackage,
   restoreRevenueCatPurchases,
@@ -31,6 +31,7 @@ export type CommercialEntitlement = {
   maxParticipantsPerLeague: number;
   adsEnabled: boolean;
   purchasesEnabled: boolean;
+  purchaseMode: 'disabled' | 'test' | 'store';
   monthlyPriceLabel: string;
   annualPriceLabel: string;
 };
@@ -50,6 +51,7 @@ export const FREE_COMMERCIAL_ENTITLEMENT: CommercialEntitlement = {
   maxParticipantsPerLeague: 6,
   adsEnabled: true,
   purchasesEnabled: false,
+  purchaseMode: 'disabled',
   monthlyPriceLabel: '2,99 €/mese',
   annualPriceLabel: '9,99 €/anno',
 };
@@ -61,6 +63,7 @@ export const DEMO_COMMERCIAL_ENTITLEMENT: CommercialEntitlement = {
   isPremium: true,
   store: 'test',
   productId: 'leghevo_premium_monthly',
+  purchaseMode: 'test',
   ownedLeagueCount: 1,
   maxOwnedLeagues: null,
   maxParticipantsPerLeague: 20,
@@ -95,7 +98,7 @@ export async function loadCommercialEntitlement(userId: string): Promise<{
     backendEntitlement = normalizeCommercialEntitlement(data);
   }
 
-  if (!isRevenueCatTestStoreEnabled()) {
+  if (!isRevenueCatEnabled()) {
     return { data: backendEntitlement, error: backendWarning || undefined };
   }
 
@@ -108,7 +111,7 @@ export async function loadCommercialEntitlement(userId: string): Promise<{
   } catch {
     return {
       data: { ...backendEntitlement, purchasesEnabled: false },
-      error: 'Non riesco a collegarmi al Test Store RevenueCat.',
+      error: 'Non riesco a collegarmi a RevenueCat.',
     };
   }
 }
@@ -156,6 +159,7 @@ function mergeRevenueCatSnapshot(
       : backend.maxParticipantsPerLeague,
     adsEnabled: !isPremium,
     purchasesEnabled: revenueCat.configured && revenueCat.offeringAvailable,
+    purchaseMode: revenueCat.purchaseMode,
     monthlyPriceLabel:
       revenueCat.monthlyPriceLabel ?? backend.monthlyPriceLabel,
     annualPriceLabel: revenueCat.annualPriceLabel ?? backend.annualPriceLabel,
@@ -213,6 +217,7 @@ function normalizeCommercialEntitlement(
     ),
     adsEnabled: !isPremium && raw.adsEnabled !== false,
     purchasesEnabled: raw.purchasesEnabled === true,
+    purchaseMode: 'disabled',
     monthlyPriceLabel:
       typeof raw.monthlyPriceLabel === 'string'
         ? raw.monthlyPriceLabel.replace(' euro/', ' €/')

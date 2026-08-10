@@ -50,6 +50,8 @@
     "typecheck": "tsc --noEmit",
     "doctor": "npm ping --registry=https://registry.npmjs.org/ && npm cache verify",
     "verify": "npm run typecheck && npx expo export --platform android --platform ios --output-dir dist-verify",
+    "subscriptions:preflight:ios": "node scripts/revenuecat-store-preflight.mjs ios",
+    "subscriptions:preflight:android": "node scripts/revenuecat-store-preflight.mjs android",
     "install:clean": "npm ci --registry=https://registry.npmjs.org/",
     "release:fingerprint": "node scripts/compute-release-fingerprint.mjs"
   }

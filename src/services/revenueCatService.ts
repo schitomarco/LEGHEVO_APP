@@ -5,9 +5,16 @@ import Purchases, {
   type PurchasesOffering,
   type PurchasesPackage,
 } from 'react-native-purchases';
+import { Platform } from 'react-native';
 
 const REVENUECAT_ENTITLEMENT_ID = 'premium';
-const revenueCatApiKey = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY?.trim();
+const revenueCatTestApiKey = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY?.trim();
+const revenueCatIosApiKey =
+  process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY?.trim();
+const revenueCatAndroidApiKey =
+  process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY?.trim();
+const configuredStoreMode =
+  process.env.EXPO_PUBLIC_REVENUECAT_STORE_MODE?.trim().toLowerCase();
 const purchasesEnabled =
   process.env.EXPO_PUBLIC_REVENUECAT_PURCHASES_ENABLED === 'true';
 
@@ -26,14 +33,15 @@ export type RevenueCatSnapshot = {
   willRenew: boolean;
   monthlyPriceLabel: string | null;
   annualPriceLabel: string | null;
+  purchaseMode: 'test' | 'store';
 };
 
 export function isRevenueCatTestStoreEnabled() {
-  return (
-    __DEV__ &&
-    purchasesEnabled &&
-    revenueCatApiKey?.startsWith('test_') === true
-  );
+  return getRevenueCatConfiguration()?.mode === 'test';
+}
+
+export function isRevenueCatEnabled() {
+  return getRevenueCatConfiguration() !== null;
 }
 
 export async function loadRevenueCatSnapshot(
@@ -59,7 +67,7 @@ export async function purchaseRevenueCatPackage(
     if (!offering || !selectedPackage) {
       return {
         error:
-          'Il piano selezionato non è disponibile nel Test Store. Controlla l’offerta Premium su RevenueCat.',
+          'Il piano selezionato non è disponibile nello store. Controlla l’offerta Premium su RevenueCat.',
       };
     }
 
@@ -96,8 +104,9 @@ export async function restoreRevenueCatPurchases(
 }
 
 async function ensureRevenueCatUser(userId: string) {
-  if (!isRevenueCatTestStoreEnabled() || !revenueCatApiKey) {
-    throw new Error('RevenueCat Test Store non è configurato in questa build.');
+  const configuration = getRevenueCatConfiguration();
+  if (!configuration) {
+    throw new Error('RevenueCat non è configurato in modo sicuro per questa build.');
   }
   if (!userId) {
     throw new Error('Accedi al tuo account prima di gestire Premium.');
@@ -106,7 +115,7 @@ async function ensureRevenueCatUser(userId: string) {
   if (!configured) {
     if (!configurationTask) {
       configurationTask = Promise.resolve().then(async () => {
-        Purchases.configure({ apiKey: revenueCatApiKey, appUserID: userId });
+        Purchases.configure({ apiKey: configuration.apiKey, appUserID: userId });
         if (__DEV__) {
           await Purchases.setLogLevel(LOG_LEVEL.DEBUG);
         }
@@ -153,6 +162,10 @@ function createSnapshot(
   customerInfo: CustomerInfo,
   offering: PurchasesOffering | null,
 ): RevenueCatSnapshot {
+  const configuration = getRevenueCatConfiguration();
+  if (!configuration) {
+    throw new Error('RevenueCat non è configurato in modo sicuro per questa build.');
+  }
   const entitlement = customerInfo.entitlements.active[REVENUECAT_ENTITLEMENT_ID];
   return {
     configured: true,
@@ -165,7 +178,41 @@ function createSnapshot(
     willRenew: entitlement?.willRenew === true,
     monthlyPriceLabel: offering?.monthly?.product.priceString ?? null,
     annualPriceLabel: offering?.annual?.product.priceString ?? null,
+    purchaseMode: configuration.mode,
   };
+}
+
+function getRevenueCatConfiguration(): {
+  apiKey: string;
+  mode: 'test' | 'store';
+} | null {
+  if (!purchasesEnabled) {
+    return null;
+  }
+
+  const wantsTestStore =
+    configuredStoreMode === 'test' ||
+    (!configuredStoreMode && revenueCatTestApiKey?.startsWith('test_'));
+  if (wantsTestStore) {
+    return __DEV__ && revenueCatTestApiKey?.startsWith('test_')
+      ? { apiKey: revenueCatTestApiKey, mode: 'test' }
+      : null;
+  }
+
+  if (configuredStoreMode !== 'store') {
+    return null;
+  }
+
+  if (Platform.OS === 'ios' && revenueCatIosApiKey?.startsWith('appl_')) {
+    return { apiKey: revenueCatIosApiKey, mode: 'store' };
+  }
+  if (
+    Platform.OS === 'android' &&
+    revenueCatAndroidApiKey?.startsWith('goog_')
+  ) {
+    return { apiKey: revenueCatAndroidApiKey, mode: 'store' };
+  }
+  return null;
 }
 
 function mapStore(store: string | undefined): 'apple' | 'google' | 'test' | null {
@@ -192,7 +239,7 @@ function isCancelledPurchase(error: unknown) {
 }
 
 function revenueCatErrorMessage(error: unknown) {
-  if (error instanceof Error && error.message.includes('Test Store non è configurato')) {
+  if (error instanceof Error && error.message.includes('non è configurato')) {
     return error.message;
   }
   return 'RevenueCat non è raggiungibile. Controlla la connessione e riprova.';
