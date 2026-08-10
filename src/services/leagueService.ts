@@ -597,6 +597,12 @@ function translateLeagueError(message: string) {
   if (normalized.includes('nome squadra deve contenere')) {
     return 'Il nome squadra deve contenere da 2 a 40 caratteri.';
   }
+  if (normalized.includes('piano free consente una sola lega')) {
+    return 'Il piano Free consente una sola lega. Attiva Premium per crearne altre.';
+  }
+  if (normalized.includes('piano free consente fino a 6 partecipanti')) {
+    return 'Il piano Free consente fino a 6 partecipanti. Premium arriva fino a 20.';
+  }
 
   return message;
 }

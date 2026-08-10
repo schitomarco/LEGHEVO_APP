@@ -1,7 +1,9 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { CommercialEntitlement } from '../services/subscriptionService';
 import { colors, radius } from '../theme';
 
 type Props = {
+  commercial: CommercialEntitlement;
   displayName: string;
   email: string;
   isDemo: boolean;
@@ -10,12 +12,14 @@ type Props = {
   onAbout: () => void;
   onNotifications: () => void;
   onPreferences: () => void;
+  onPremium: () => void;
   onPrivacy: () => void;
   onSupport: () => void;
   onLogout: () => void | Promise<void>;
 };
 
 export function ProfileScreen({
+  commercial,
   displayName,
   email,
   isDemo,
@@ -24,6 +28,7 @@ export function ProfileScreen({
   onAbout,
   onNotifications,
   onPreferences,
+  onPremium,
   onPrivacy,
   onSupport,
   onLogout,
@@ -57,14 +62,24 @@ export function ProfileScreen({
 
       <View style={styles.premiumCard}>
         <View style={styles.premiumPill}>
-          <Text style={styles.premiumPillText}>LEGHEVO PREMIUM</Text>
+          <Text style={styles.premiumPillText}>
+            {commercial.isPremium ? 'PREMIUM ATTIVO' : 'LEGHEVO PREMIUM'}
+          </Text>
         </View>
-        <Text style={styles.premiumTitle}>Più leghe. Più statistiche.</Text>
-        <Text style={styles.premiumBody}>
-          E più motivi per discutere fino a lunedì mattina.
+        <Text style={styles.premiumTitle}>
+          {commercial.isPremium
+            ? 'Nessuna pubblicità. Nessun limite inutile.'
+            : 'Più leghe. Più partecipanti.'}
         </Text>
-        <Pressable style={styles.premiumButton}>
-          <Text style={styles.premiumButtonText}>Scopri Premium</Text>
+        <Text style={styles.premiumBody}>
+          {commercial.isPremium
+            ? 'Il tuo account può creare leghe fino a 20 partecipanti.'
+            : `Una lega da 6 è gratis. Premium costa ${commercial.monthlyPriceLabel}.`}
+        </Text>
+        <Pressable onPress={onPremium} style={styles.premiumButton}>
+          <Text style={styles.premiumButtonText}>
+            {commercial.isPremium ? 'Gestisci Premium' : 'Scopri Premium'}
+          </Text>
         </Pressable>
       </View>
 

@@ -24,6 +24,7 @@ export type AppScreen =
   | 'notificationPreferences'
   | 'players'
   | 'postponements'
+  | 'premium'
   | 'privacy'
   | 'publicRoster'
   | 'support';

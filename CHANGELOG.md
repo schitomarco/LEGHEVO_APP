@@ -1,3 +1,16 @@
+# In sviluppo — Fondazione Free/Premium
+
+- contratto Free con una lega principale e massimo 6 partecipanti;
+- contratto Premium da 9,99 EUR/mese con leghe senza limite commerciale,
+  massimo 20 partecipanti per lega e nessuna pubblicità sul singolo account;
+- entitlement autorevole Supabase, eventi store idempotenti e non modificabili
+  dal client;
+- limiti applicati atomicamente nella creazione lega con protezione dalla
+  concorrenza;
+- schermata Premium e selezione partecipanti coerente con il piano;
+- acquisti e annunci mantenuti disattivati fino al completamento delle
+  integrazioni RevenueCat, Apple, Google e AdMob.
+
 # v0.62.43 — Sigillo finale di production readiness e go-live controllato
 
 - certificazione conclusiva di dieci capacità terminali della produzione;

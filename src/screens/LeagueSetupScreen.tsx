@@ -17,24 +17,29 @@ import type {
   LeagueInvitePreview,
   LeagueInvitePreviewOutcome,
 } from '../services/leagueService';
+import type { CommercialEntitlement } from '../services/subscriptionService';
 import { colors, radius } from '../theme';
 import type { LeagueMode } from '../types';
 
 type SetupMode = 'create' | 'join';
 
 type Props = {
+  commercial: CommercialEntitlement;
   onClose: () => void;
   onCreate: (input: CreateLeagueInput) => Promise<LeagueActionOutcome>;
   onJoin: (input: JoinLeagueInput) => Promise<LeagueActionOutcome>;
   onPreviewInvite: (inviteCode: string) => Promise<LeagueInvitePreviewOutcome>;
+  onOpenPremium: () => void;
   onSuccess: (leagueId: string) => void;
 };
 
 export function LeagueSetupScreen({
+  commercial,
   onClose,
   onCreate,
   onJoin,
   onPreviewInvite,
+  onOpenPremium,
   onSuccess,
 }: Props) {
   const [setupMode, setSetupMode] = useState<SetupMode>('create');
@@ -42,7 +47,7 @@ export function LeagueSetupScreen({
   const [teamName, setTeamName] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [leagueMode, setLeagueMode] = useState<LeagueMode>('classic');
-  const [teamLimit, setTeamLimit] = useState(8);
+  const [teamLimit, setTeamLimit] = useState(6);
   const [startingCredits, setStartingCredits] = useState('500');
   const [rosterSize, setRosterSize] = useState('25');
   const [feedback, setFeedback] = useState('');
@@ -102,6 +107,17 @@ export function LeagueSetupScreen({
 
     if (setupMode === 'create' && leagueName.trim().length < 3) {
       setFeedback('Il nome della lega deve avere almeno 3 caratteri.');
+      return;
+    }
+
+    if (
+      setupMode === 'create' &&
+      !commercial.isPremium &&
+      commercial.ownedLeagueCount >= 1
+    ) {
+      setFeedback(
+        'Hai già creato la lega inclusa nel piano Free. Premium sblocca nuove leghe.',
+      );
       return;
     }
 
@@ -321,8 +337,28 @@ export function LeagueSetupScreen({
               </View>
 
               <FieldLabel text="PARTECIPANTI" />
+              <View style={styles.planNotice}>
+                <View style={styles.planCopy}>
+                  <Text style={styles.planNoticeTitle}>
+                    {commercial.isPremium ? 'PIANO PREMIUM' : 'PIANO FREE'}
+                  </Text>
+                  <Text style={styles.planNoticeBody}>
+                    {commercial.isPremium
+                      ? 'Fino a 20 partecipanti per lega.'
+                      : 'Una lega, massimo 6 partecipanti.'}
+                  </Text>
+                </View>
+                {!commercial.isPremium ? (
+                  <Pressable onPress={onOpenPremium} style={styles.planButton}>
+                    <Text style={styles.planButtonText}>PREMIUM</Text>
+                  </Pressable>
+                ) : null}
+              </View>
               <View style={styles.choiceRow}>
-                {[6, 8, 10, 12].map((value) => (
+                {(commercial.isPremium
+                  ? [6, 8, 10, 12, 14, 16, 18, 20]
+                  : [6]
+                ).map((value) => (
                   <Choice
                     active={teamLimit === value}
                     compact
@@ -573,7 +609,45 @@ const styles = StyleSheet.create({
   },
   choiceRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 9,
+  },
+  planNotice: {
+    minHeight: 64,
+    borderRadius: radius.md,
+    backgroundColor: '#EAF1E3',
+    padding: 13,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  planCopy: {
+    flex: 1,
+  },
+  planNoticeTitle: {
+    color: colors.navy,
+    fontSize: 9,
+    fontWeight: '900',
+  },
+  planNoticeBody: {
+    color: colors.muted,
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: 4,
+  },
+  planButton: {
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: colors.navy,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  planButtonText: {
+    color: colors.lime,
+    fontSize: 9,
+    fontWeight: '900',
   },
   choice: {
     flex: 1,
@@ -587,6 +661,7 @@ const styles = StyleSheet.create({
   },
   choiceCompact: {
     minWidth: 0,
+    flexBasis: '20%',
   },
   choiceActive: {
     borderColor: colors.navy,

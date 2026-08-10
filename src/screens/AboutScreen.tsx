@@ -8,14 +8,13 @@ import {
   LEGHEVO_ACTIVE_SERVICES,
   LEGHEVO_LEGAL_PROFILE,
 } from '../legalProfile';
+import { APP_RELEASE_VERSION } from '../release';
 import { colors, radius } from '../theme';
 
 type Props = {
   onBack: () => void;
   onPrivacy: () => void;
 };
-
-const APP_VERSION = '0.55.1';
 
 export function AboutScreen({ onBack, onPrivacy }: Props) {
   const openEmail = () =>
@@ -47,7 +46,7 @@ export function AboutScreen({ onBack, onPrivacy }: Props) {
         <Text style={styles.heroBody}>
           App per iOS e Android ideata e sviluppata da Marco Schito.
         </Text>
-        <Text style={styles.version}>Versione {APP_VERSION}</Text>
+        <Text style={styles.version}>Versione {APP_RELEASE_VERSION}</Text>
       </View>
 
       <Text style={styles.sectionTitle}>Titolare e sviluppatore</Text>

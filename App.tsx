@@ -25,6 +25,7 @@ import { MatchupScreen } from './src/screens/MatchupScreen';
 import { NotificationsScreen } from './src/screens/NotificationsScreen';
 import { NotificationPreferencesScreen } from './src/screens/NotificationPreferencesScreen';
 import { PasswordRecoveryScreen } from './src/screens/PasswordRecoveryScreen';
+import { PremiumScreen } from './src/screens/PremiumScreen';
 import { ReleaseCompatibilityScreen } from './src/screens/ReleaseCompatibilityScreen';
 import { PlayersScreen } from './src/screens/PlayersScreen';
 import { PostponementsScreen } from './src/screens/PostponementsScreen';
@@ -37,6 +38,7 @@ import { StandingsScreen } from './src/screens/StandingsScreen';
 import { SupportScreen } from './src/screens/SupportScreen';
 import { TeamMembershipScreen } from './src/screens/TeamMembershipScreen';
 import { useAuth } from './src/hooks/useAuth';
+import { useCommercialEntitlement } from './src/hooks/useCommercialEntitlement';
 import { useLeagues } from './src/hooks/useLeagues';
 import { useLiveMatchCenter } from './src/hooks/useLiveMatchCenter';
 import { useNotifications } from './src/hooks/useNotifications';
@@ -92,6 +94,10 @@ function LeghevoRuntime() {
     'roster' | 'market' | 'publicRoster'
   >('roster');
   const auth = useAuth();
+  const commercial = useCommercialEntitlement(
+    auth.profile.userId,
+    auth.profile.isDemo,
+  );
   const leagueState = useLeagues(auth.profile.userId, auth.profile.isDemo);
   const notificationState = useNotifications(
     auth.profile.userId,
@@ -286,12 +292,15 @@ function LeghevoRuntime() {
         )}
         {screen === 'leagueSetup' && (
           <LeagueSetupScreen
+            commercial={commercial.entitlement}
             onClose={() => setScreen('home')}
             onCreate={leagueState.create}
             onJoin={leagueState.join}
+            onOpenPremium={() => setScreen('premium')}
             onPreviewInvite={leagueState.previewInvite}
             onSuccess={(leagueId) => {
               setSelectedLeagueId(leagueId);
+              void commercial.refresh(true);
               setScreen('league');
             }}
           />
@@ -481,6 +490,16 @@ function LeghevoRuntime() {
             onBack={() => setScreen('league')}
           />
         )}
+        {screen === 'premium' && (
+          <PremiumScreen
+            entitlement={commercial.entitlement}
+            error={commercial.error}
+            isDemo={auth.profile.isDemo}
+            onBack={() => setScreen('profile')}
+            onPurchase={commercial.purchase}
+            onRestore={commercial.restore}
+          />
+        )}
         {screen === 'privacy' && (
           <PrivacyScreen
             email={auth.profile.email}
@@ -502,6 +521,7 @@ function LeghevoRuntime() {
         )}
         {screen === 'profile' && (
           <ProfileScreen
+            commercial={commercial.entitlement}
             displayName={auth.profile.displayName}
             email={auth.profile.email}
             isDemo={auth.profile.isDemo}
@@ -509,6 +529,7 @@ function LeghevoRuntime() {
             onAbout={() => setScreen('about')}
             onNotifications={() => setScreen('notifications')}
             onPreferences={() => setScreen('notificationPreferences')}
+            onPremium={() => setScreen('premium')}
             onPrivacy={() => setScreen('privacy')}
             onSupport={() => setScreen('support')}
             onLogout={async () => {
@@ -545,6 +566,7 @@ function LeghevoRuntime() {
         screen !== 'notificationPreferences' &&
         screen !== 'players' &&
         screen !== 'postponements' &&
+        screen !== 'premium' &&
         screen !== 'privacy' &&
         screen !== 'support' && (
         <BottomNav
