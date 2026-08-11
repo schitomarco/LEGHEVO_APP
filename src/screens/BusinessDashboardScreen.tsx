@@ -53,13 +53,30 @@ export function BusinessDashboardScreen({ allowed, onBack }: Props) {
           <Text style={styles.eyebrow}>AREA PROPRIETARIO</Text>
           <Text style={styles.title}>Business Dashboard</Text>
         </View>
+      </View>
+      <View style={styles.refreshRow}>
         <Pressable
           accessibilityLabel="Aggiorna ricavi"
+          accessibilityHint="Ricalcola i dati della Business Dashboard"
+          accessibilityRole="button"
+          accessibilityState={{ busy: dashboard.loading, disabled: dashboard.loading }}
           disabled={dashboard.loading}
           onPress={() => void dashboard.refresh()}
-          style={styles.refreshButton}
+          hitSlop={8}
+          style={({ pressed }) => [
+            styles.refreshButton,
+            pressed && !dashboard.loading && styles.refreshButtonPressed,
+            dashboard.loading && styles.refreshButtonDisabled,
+          ]}
         >
-          <Text style={styles.refreshText}>↻</Text>
+          {dashboard.loading ? (
+            <ActivityIndicator color={colors.warmWhite} size="small" />
+          ) : (
+            <Text style={styles.refreshIcon}>↻</Text>
+          )}
+          <Text style={styles.refreshText}>
+            {dashboard.loading ? 'AGGIORNAMENTO…' : 'AGGIORNA DATI'}
+          </Text>
         </Pressable>
       </View>
 
@@ -266,11 +283,15 @@ const styles = StyleSheet.create({
   headerCopy: { flex: 1, marginHorizontal: 12 },
   backButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.navySoft, alignItems: 'center', justifyContent: 'center' },
   backText: { color: colors.warmWhite, fontSize: 30, lineHeight: 33, fontWeight: '700' },
-  refreshButton: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center' },
-  refreshText: { color: colors.navy, fontSize: 24, fontWeight: '900' },
+  refreshRow: { alignItems: 'flex-end', marginTop: 14 },
+  refreshButton: { minWidth: 148, height: 42, borderRadius: 21, paddingHorizontal: 16, backgroundColor: colors.navySoft, flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' },
+  refreshButtonPressed: { opacity: 0.78 },
+  refreshButtonDisabled: { opacity: 0.7 },
+  refreshIcon: { color: colors.lime, fontSize: 20, lineHeight: 22, fontWeight: '900' },
+  refreshText: { color: colors.warmWhite, fontSize: 10, fontWeight: '900', letterSpacing: 0.5 },
   eyebrow: { color: colors.muted, fontSize: 9, fontWeight: '900', letterSpacing: 0.7 },
   title: { color: colors.navy, fontSize: 24, fontWeight: '900', marginTop: 3 },
-  heroCard: { backgroundColor: colors.navy, borderRadius: radius.xl, padding: 24, marginTop: 24, ...shadow },
+  heroCard: { backgroundColor: colors.navy, borderRadius: radius.xl, padding: 24, marginTop: 14, ...shadow },
   heroEyebrow: { color: colors.lime, fontSize: 10, fontWeight: '900', letterSpacing: 0.7 },
   heroAmount: { color: colors.warmWhite, fontSize: 42, fontWeight: '900', marginTop: 14 },
   heroLabel: { color: colors.mutedLight, fontSize: 13, marginTop: 3 },
