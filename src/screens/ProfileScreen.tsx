@@ -3,6 +3,7 @@ import type { CommercialEntitlement } from '../services/subscriptionService';
 import { colors, radius } from '../theme';
 
 type Props = {
+  canAccessBusinessDashboard: boolean;
   commercial: CommercialEntitlement;
   displayName: string;
   email: string;
@@ -10,6 +11,7 @@ type Props = {
   unreadCount: number;
   onAccount: () => void;
   onAbout: () => void;
+  onBusinessDashboard: () => void;
   onNotifications: () => void;
   onPreferences: () => void;
   onPremium: () => void;
@@ -19,6 +21,7 @@ type Props = {
 };
 
 export function ProfileScreen({
+  canAccessBusinessDashboard,
   commercial,
   displayName,
   email,
@@ -26,6 +29,7 @@ export function ProfileScreen({
   unreadCount,
   onAccount,
   onAbout,
+  onBusinessDashboard,
   onNotifications,
   onPreferences,
   onPremium,
@@ -39,6 +43,31 @@ export function ProfileScreen({
     .join('')
     .slice(0, 2)
     .toUpperCase();
+  const menuItems = [
+    {
+      label: 'Account e sicurezza',
+      detail: '',
+      onPress: onAccount,
+    },
+    ...(canAccessBusinessDashboard
+      ? [
+          {
+            label: '💰 Ricavi · Business Dashboard',
+            detail: 'RISERVATA',
+            onPress: onBusinessDashboard,
+          },
+        ]
+      : []),
+    {
+      label: 'Notifiche',
+      detail: unreadCount > 0 ? String(unreadCount) : '',
+      onPress: onNotifications,
+    },
+    { label: 'Preferenze', detail: '', onPress: onPreferences },
+    { label: 'Privacy', detail: '', onPress: onPrivacy },
+    { label: 'Assistenza', detail: '', onPress: onSupport },
+    { label: 'Informazioni su LEGHEVO', detail: '', onPress: onAbout },
+  ];
 
   return (
     <ScrollView
@@ -84,22 +113,7 @@ export function ProfileScreen({
       </View>
 
       <View style={styles.menu}>
-        {[
-          {
-            label: 'Account e sicurezza',
-            detail: '',
-            onPress: onAccount,
-          },
-          {
-            label: 'Notifiche',
-            detail: unreadCount > 0 ? String(unreadCount) : '',
-            onPress: onNotifications,
-          },
-          { label: 'Preferenze', detail: '', onPress: onPreferences },
-          { label: 'Privacy', detail: '', onPress: onPrivacy },
-          { label: 'Assistenza', detail: '', onPress: onSupport },
-          { label: 'Informazioni su LEGHEVO', detail: '', onPress: onAbout },
-        ].map((item) => (
+        {menuItems.map((item) => (
           <Pressable
             key={item.label}
             onPress={item.onPress}

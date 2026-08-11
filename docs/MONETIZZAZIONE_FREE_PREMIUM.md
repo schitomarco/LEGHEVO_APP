@@ -40,6 +40,29 @@ nel database:
 La funzione `get_my_commercial_entitlement_v1` espone al solo utente autenticato
 la proiezione necessaria all’interfaccia, senza transazioni o payload privati.
 
+## Business Dashboard proprietario
+
+La sezione `💰 Ricavi` è globale e non appartiene alla Direzione di una lega.
+Essere Presidente o Admin non concede alcun accesso. Il database conserva un
+solo proprietario in `platform_business_owners`; l'identità iniziale viene
+riconosciuta tramite un'impronta SHA-256 e mai tramite un indirizzo e-mail
+pubblicato nel codice.
+
+`get_leghevo_business_dashboard_v1` aggrega esclusivamente dati server-side:
+
+- utenti con accesso negli ultimi 30 giorni e Premium attivi;
+- conversione, nuovi Premium, rinnovi, cancellazioni e ARPU;
+- stima lorda Apple/Google dagli eventi RevenueCat di produzione;
+- ricavi e leghe su serie giornaliera e mensile;
+- costi manuali più commissione store gestionale stimata al 15%;
+- margine operativo stimato.
+
+Pubblicità, League Pro e costi esterni sono letti dal registro service-only
+`business_financial_entries` e restano a zero finché una fonte attendibile non
+li registra. La dashboard non crea numeri dimostrativi e mostra sempre
+l'avvertenza che maturato, commissioni e liquidato ufficiali sono quelli di
+Apple, Google e degli altri provider.
+
 ## Integrazioni previste
 
 - prodotti Apple: `leghevo_premium_monthly` e `leghevo_premium_annual`;
@@ -106,9 +129,10 @@ AdMob, consenso e documenti legali aggiornati non sono pubblicati.
 - RevenueCat: entrambi i prodotti Apple collegati all'entitlement `premium` e
   ai package Monthly/Annual dell'offerta predefinita `Premium`; i prodotti
   Test Store restano limitati allo sviluppo.
-- Build iOS di collaudo `0.62.49 (3)` generata con ambiente `preview` e inviata
-  a TestFlight. `ascAppId` è dichiarato nel profilo submit per rendere
-  ripetibili i caricamenti successivi.
+- Build iOS di collaudo `0.62.49 (4)` generata con ambiente `preview`, chiavi
+  RevenueCat e backend Supabase staging completi, quindi inviata a TestFlight.
+  `ascAppId` è dichiarato nel profilo submit per rendere ripetibili i
+  caricamenti successivi.
 - Google Play reale resta in attesa dell'attivazione dell'account sviluppatore;
   il prodotto `leghevo_premium` e i base plan `monthly`/`annual` non sono
   ancora stati creati.

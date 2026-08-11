@@ -1,5 +1,12 @@
 # In sviluppo — Fondazione Free/Premium
 
+- aggiunta la Business Dashboard proprietario con ricavi gestionali stimati,
+  utenti attivi, Premium, conversione, ARPU, rinnovi, cancellazioni, margine e
+  grafici giornalieri/mensili; accesso separato dagli Admin di lega e protetto
+  server-side da un'unica identità globale;
+- introdotto un registro finanziario service-only per pubblicità, League Pro e
+  costi futuri; Apple/Google sono stimati dagli eventi RevenueCat di produzione
+  e gli importi ufficiali restano quelli rendicontati dai provider;
 - separata la configurazione RevenueCat per piattaforma: Test Store confinato
   alle build `__DEV__`, chiavi SDK `appl_`/`goog_` richieste in modalità store
   e inizializzazione fail-closed in caso di ambiente o chiave incompatibili;
@@ -7,8 +14,8 @@
   `preview` collegato allo staging; soltanto la build finale usa l'ambiente
   `production`, evitando commistioni durante i collaudi sandbox della `1.0.0`;
 - configurati i prodotti App Store mensile/annuale nell'offerta RevenueCat
-  `Premium` e inviata a TestFlight la build di collaudo `0.62.49 (3)` con
-  chiave `appl_`, staging e submit App Store Connect ripetibile;
+  `Premium` e inviata a TestFlight la build di collaudo `0.62.49 (4)` con
+  chiave `appl_`, backend staging completo e submit App Store Connect ripetibile;
 
 - distribuito sullo staging il percorso calendario football-data.org con run
   provider-aware, lease/fencing, staging atomico, contratto payload, cache e

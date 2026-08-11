@@ -4,6 +4,7 @@ export type AppScreen =
   | 'about'
   | 'account'
   | 'auction'
+  | 'businessDashboard'
   | 'calendar'
   | 'leagueCup'
   | 'leagueOperations'

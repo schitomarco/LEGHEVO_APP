@@ -5,6 +5,7 @@ import { BottomNav } from './src/components/BottomNav';
 import { AboutScreen } from './src/screens/AboutScreen';
 import { AccountScreen } from './src/screens/AccountScreen';
 import { AuctionScreen } from './src/screens/AuctionScreen';
+import { BusinessDashboardScreen } from './src/screens/BusinessDashboardScreen';
 import { CalendarScreen } from './src/screens/CalendarScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LeagueCupScreen } from './src/screens/LeagueCupScreen';
@@ -38,6 +39,7 @@ import { StandingsScreen } from './src/screens/StandingsScreen';
 import { SupportScreen } from './src/screens/SupportScreen';
 import { TeamMembershipScreen } from './src/screens/TeamMembershipScreen';
 import { useAuth } from './src/hooks/useAuth';
+import { useBusinessDashboardAccess } from './src/hooks/useBusinessDashboard';
 import { useCommercialEntitlement } from './src/hooks/useCommercialEntitlement';
 import { useLeagues } from './src/hooks/useLeagues';
 import { useLiveMatchCenter } from './src/hooks/useLiveMatchCenter';
@@ -95,6 +97,10 @@ function LeghevoRuntime() {
   >('roster');
   const auth = useAuth();
   const commercial = useCommercialEntitlement(
+    auth.profile.userId,
+    auth.profile.isDemo,
+  );
+  const businessDashboardAccess = useBusinessDashboardAccess(
     auth.profile.userId,
     auth.profile.isDemo,
   );
@@ -258,6 +264,12 @@ function LeghevoRuntime() {
           <AboutScreen
             onBack={() => setScreen('profile')}
             onPrivacy={() => setScreen('privacy')}
+          />
+        )}
+        {screen === 'businessDashboard' && (
+          <BusinessDashboardScreen
+            allowed={businessDashboardAccess.allowed}
+            onBack={() => setScreen('profile')}
           />
         )}
         {screen === 'account' && (
@@ -521,12 +533,14 @@ function LeghevoRuntime() {
         )}
         {screen === 'profile' && (
           <ProfileScreen
+            canAccessBusinessDashboard={businessDashboardAccess.allowed}
             commercial={commercial.entitlement}
             displayName={auth.profile.displayName}
             email={auth.profile.email}
             isDemo={auth.profile.isDemo}
             onAccount={() => setScreen('account')}
             onAbout={() => setScreen('about')}
+            onBusinessDashboard={() => setScreen('businessDashboard')}
             onNotifications={() => setScreen('notifications')}
             onPreferences={() => setScreen('notificationPreferences')}
             onPremium={() => setScreen('premium')}
@@ -545,6 +559,7 @@ function LeghevoRuntime() {
       {screen !== 'about' &&
         screen !== 'account' &&
         screen !== 'auction' &&
+        screen !== 'businessDashboard' &&
         screen !== 'calendar' &&
         screen !== 'leagueCup' &&
         screen !== 'leaguePlayoffs' &&
