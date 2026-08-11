@@ -129,7 +129,7 @@ AdMob, consenso e documenti legali aggiornati non sono pubblicati.
 - RevenueCat: entrambi i prodotti Apple collegati all'entitlement `premium` e
   ai package Monthly/Annual dell'offerta predefinita `Premium`; i prodotti
   Test Store restano limitati allo sviluppo.
-- Build iOS di collaudo `0.62.49 (4)` generata con ambiente `preview`, chiavi
+- Build iOS di collaudo `0.62.49 (5)` generata con ambiente `preview`, chiavi
   RevenueCat e backend Supabase staging completi, quindi inviata a TestFlight.
   `ascAppId` è dichiarato nel profilo submit per rendere ripetibili i
   caricamenti successivi.

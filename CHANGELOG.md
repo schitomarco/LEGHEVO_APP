@@ -14,7 +14,7 @@
   `preview` collegato allo staging; soltanto la build finale usa l'ambiente
   `production`, evitando commistioni durante i collaudi sandbox della `1.0.0`;
 - configurati i prodotti App Store mensile/annuale nell'offerta RevenueCat
-  `Premium` e inviata a TestFlight la build di collaudo `0.62.49 (4)` con
+  `Premium` e inviata a TestFlight la build di collaudo `0.62.49 (5)` con
   chiave `appl_`, backend staging completo e submit App Store Connect ripetibile;
 
 - distribuito sullo staging il percorso calendario football-data.org con run
