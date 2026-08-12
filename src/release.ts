@@ -1,3 +1,3 @@
-export const APP_RELEASE_VERSION = '0.62.49';
+export const APP_RELEASE_VERSION = '1.0.0';
 export const APP_RELEASE_CONTRACT_VERSION = 1;
-export const APP_BUNDLE_FINGERPRINT = '4e4632bb9779f3dcdb20afa6700a80136e7efcd7ca1c6cb2851d270cb23f3ceb';
+export const APP_BUNDLE_FINGERPRINT = '06ea897294c9cb1c4a3d5377a37e7db073dc53b19dead5129d8efadbc11c7b68';

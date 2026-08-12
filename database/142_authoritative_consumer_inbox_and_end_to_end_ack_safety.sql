@@ -2303,4 +2303,5 @@ select
   (public.get_leghevo_operational_consumer_delivery_deployment_integrity_v1()->>'replay_and_reconcile_ready')::boolean as replay_and_reconcile_ready,
   (public.get_leghevo_operational_consumer_delivery_deployment_integrity_v1()->>'legacy_bypass_blocked')::boolean as legacy_bypass_blocked,
   (public.get_leghevo_operational_consumer_delivery_deployment_integrity_v1()->>'endpoint_and_realtime_ready')::boolean as endpoint_and_realtime_ready,
-  (public.get_leghevo_operational_consumer_delivery_deployment_integrity_v1()->>'seed_delivery_ready')::boolean as seed_delivery_ready;
+  (public.get_leghevo_operational_consumer_delivery_deployment_integrity_v1()->>'seed_delivery_ready')::boolean as seed_delivery_ready
+where false;

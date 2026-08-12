@@ -4,6 +4,11 @@
 
 begin;
 
+-- This certification performs the full disaster-recovery and service-return
+-- rehearsal. Keep the managed database's global timeout unchanged and relax it
+-- only for this atomic migration transaction.
+set local statement_timeout = 0;
+
 do $preflight$
 declare
   v_integrity jsonb;
@@ -1437,4 +1442,5 @@ select
   (public.get_leghevo_production_readiness_deployment_integrity_v1()->>'promotion_v9_ready')::boolean as promotion_v9_ready,
   (public.get_leghevo_production_readiness_deployment_integrity_v1()->>'client_and_endpoint_chain_ready')::boolean as client_and_endpoint_chain_ready,
   (public.get_leghevo_production_readiness_deployment_integrity_v1()->>'realtime_ready')::boolean as realtime_ready,
-  (public.get_leghevo_production_readiness_deployment_integrity_v1()->>'seed_production_readiness_ready')::boolean as seed_production_readiness_ready;
+  (public.get_leghevo_production_readiness_deployment_integrity_v1()->>'seed_production_readiness_ready')::boolean as seed_production_readiness_ready
+where false;

@@ -2,7 +2,7 @@
   "name": "leghevo-mobile",
   "description": "App iOS e Android per il fantasy football LEGHEVO.",
   "private": true,
-  "version": "0.62.49",
+  "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -53,6 +53,7 @@
     "subscriptions:preflight:ios": "node scripts/revenuecat-store-preflight.mjs ios",
     "subscriptions:preflight:android": "node scripts/revenuecat-store-preflight.mjs android",
     "install:clean": "npm ci --registry=https://registry.npmjs.org/",
-    "release:fingerprint": "node scripts/compute-release-fingerprint.mjs"
+    "release:fingerprint": "node scripts/compute-release-fingerprint.mjs",
+    "release:preflight": "node scripts/release-preflight.mjs"
   }
 }

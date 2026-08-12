@@ -1582,4 +1582,5 @@ select
   (public.get_leghevo_service_return_deployment_integrity_v1()->>'dependency_reconcile_ready')::boolean as dependency_reconcile_ready,
   (public.get_leghevo_service_return_deployment_integrity_v1()->>'promotion_and_client_chain_ready')::boolean as promotion_and_client_chain_ready,
   (public.get_leghevo_service_return_deployment_integrity_v1()->>'endpoint_and_realtime_ready')::boolean as endpoint_and_realtime_ready,
-  (public.get_leghevo_service_return_deployment_integrity_v1()->>'seed_service_return_ready')::boolean as seed_service_return_ready;
+  (public.get_leghevo_service_return_deployment_integrity_v1()->>'seed_service_return_ready')::boolean as seed_service_return_ready
+where false;

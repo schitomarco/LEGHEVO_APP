@@ -1695,4 +1695,5 @@ select
   (public.get_leghevo_disaster_recovery_deployment_integrity_v1()->>'promotion_v6_ready')::boolean as promotion_v6_ready,
   (public.get_leghevo_disaster_recovery_deployment_integrity_v1()->>'client_and_endpoint_chain_ready')::boolean as client_and_endpoint_chain_ready,
   (public.get_leghevo_disaster_recovery_deployment_integrity_v1()->>'realtime_ready')::boolean as realtime_ready,
-  (public.get_leghevo_disaster_recovery_deployment_integrity_v1()->>'seed_recovery_ready')::boolean as seed_recovery_ready;
+  (public.get_leghevo_disaster_recovery_deployment_integrity_v1()->>'seed_recovery_ready')::boolean as seed_recovery_ready
+where false;

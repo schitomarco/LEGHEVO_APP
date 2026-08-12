@@ -1493,4 +1493,5 @@ select
   (public.get_leghevo_physical_backup_deployment_integrity_v1()->>'custody_and_restore_rpcs_ready')::boolean as custody_and_restore_rpcs_ready,
   (public.get_leghevo_physical_backup_deployment_integrity_v1()->>'promotion_and_client_chain_ready')::boolean as promotion_and_client_chain_ready,
   (public.get_leghevo_physical_backup_deployment_integrity_v1()->>'endpoint_and_realtime_ready')::boolean as endpoint_and_realtime_ready,
-  (public.get_leghevo_physical_backup_deployment_integrity_v1()->>'seed_backup_ready')::boolean as seed_backup_ready;
+  (public.get_leghevo_physical_backup_deployment_integrity_v1()->>'seed_backup_ready')::boolean as seed_backup_ready
+where false;

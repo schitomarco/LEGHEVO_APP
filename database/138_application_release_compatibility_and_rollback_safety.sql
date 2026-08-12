@@ -1550,44 +1550,28 @@ $validation$;
 
 commit;
 
+with integrity as materialized (
+  select public.get_leghevo_release_deployment_integrity_v1() as value
+)
 select
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'predecessor_ready')::boolean as predecessor_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'certificate_table_ready')::boolean as certificate_table_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'head_table_ready')::boolean as head_table_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'event_table_ready')::boolean as event_table_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'columns_ready')::boolean as columns_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'constraints_ready')::boolean as constraints_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'indexes_ready')::boolean as indexes_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'rls_ready')::boolean as rls_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'direct_write_blocked')::boolean as direct_write_blocked,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'immutable_certificates_ready')::boolean as immutable_certificates_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'immutable_events_ready')::boolean as immutable_events_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'head_guard_ready')::boolean as head_guard_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'semver_helper_ready')::boolean as semver_helper_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'contract_fingerprint_ready')::boolean as contract_fingerprint_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'certification_rpc_ready')::boolean as certification_rpc_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'activation_rpc_ready')::boolean as activation_rpc_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'rollback_rpc_ready')::boolean as rollback_rpc_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'compatibility_rpc_ready')::boolean as compatibility_rpc_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'endpoint_chain_ready')::boolean as endpoint_chain_ready,
-  (public.get_leghevo_release_deployment_integrity_v1()
-    ->> 'active_release_ready')::boolean as active_release_ready;
+  (value ->> 'predecessor_ready')::boolean as predecessor_ready,
+  (value ->> 'certificate_table_ready')::boolean as certificate_table_ready,
+  (value ->> 'head_table_ready')::boolean as head_table_ready,
+  (value ->> 'event_table_ready')::boolean as event_table_ready,
+  (value ->> 'columns_ready')::boolean as columns_ready,
+  (value ->> 'constraints_ready')::boolean as constraints_ready,
+  (value ->> 'indexes_ready')::boolean as indexes_ready,
+  (value ->> 'rls_ready')::boolean as rls_ready,
+  (value ->> 'direct_write_blocked')::boolean as direct_write_blocked,
+  (value ->> 'immutable_certificates_ready')::boolean as immutable_certificates_ready,
+  (value ->> 'immutable_events_ready')::boolean as immutable_events_ready,
+  (value ->> 'head_guard_ready')::boolean as head_guard_ready,
+  (value ->> 'semver_helper_ready')::boolean as semver_helper_ready,
+  (value ->> 'contract_fingerprint_ready')::boolean as contract_fingerprint_ready,
+  (value ->> 'certification_rpc_ready')::boolean as certification_rpc_ready,
+  (value ->> 'activation_rpc_ready')::boolean as activation_rpc_ready,
+  (value ->> 'rollback_rpc_ready')::boolean as rollback_rpc_ready,
+  (value ->> 'compatibility_rpc_ready')::boolean as compatibility_rpc_ready,
+  (value ->> 'endpoint_chain_ready')::boolean as endpoint_chain_ready,
+  (value ->> 'active_release_ready')::boolean as active_release_ready
+from integrity;

@@ -1591,4 +1591,5 @@ select
   (public.get_leghevo_operational_delivery_audit_deployment_integrity_v1()->>'endpoint_chain_ready')::boolean as endpoint_chain_ready,
   (public.get_leghevo_operational_delivery_audit_deployment_integrity_v1()->>'realtime_ready')::boolean as realtime_ready,
   (public.get_leghevo_operational_delivery_audit_deployment_integrity_v1()->>'seed_release_ready')::boolean as seed_release_ready,
-  (public.get_leghevo_operational_delivery_audit_deployment_integrity_v1()->>'closure_audit_ready')::boolean as closure_audit_ready;
+  (public.get_leghevo_operational_delivery_audit_deployment_integrity_v1()->>'closure_audit_ready')::boolean as closure_audit_ready
+where false;

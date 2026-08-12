@@ -1,4 +1,24 @@
-# In sviluppo — Fondazione Free/Premium
+# v1.0.0 — Prima release pubblica
+
+- promossa la candidata Free/Premium certificata alla versione pubblica
+  `1.0.0`, conservando `0.62.50` come rollback immutabile;
+- incrementati gli identificativi store a iOS build `6` e Android
+  versionCode `3`;
+- aggiunta la certificazione atomica di release, rollout al 100% e readiness
+  di produzione per il bundle pubblico.
+
+# v0.62.50 — Candidata store Free/Premium
+
+- aggiunta una barriera EAS fail-closed che separa sviluppo, staging e
+  produzione e impedisce alle build store di usare Test Store, chiavi
+  RevenueCat della piattaforma errata o il backend LEGHEVO Staging in
+  produzione;
+- inclusi `app.config.js` ed `eas.json` nella fingerprint applicativa, così la
+  configurazione cloud fa parte del contratto certificato della candidata;
+- esteso il preflight all'inventario additivo completo delle migrazioni
+  `001`-`169`.
+
+# Fondazione Free/Premium successiva alla v0.62.49
 
 - aggiunta la Business Dashboard proprietario con ricavi gestionali stimati,
   utenti attivi, Premium, conversione, ARPU, rinnovi, cancellazioni, margine e
