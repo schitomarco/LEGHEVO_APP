@@ -7,33 +7,51 @@
     "development": {
       "environment": "development",
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "development"
+      }
     },
     "development-simulator": {
       "environment": "development",
       "developmentClient": true,
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "development"
+      },
       "ios": {
         "simulator": true
       }
     },
     "preview": {
       "environment": "preview",
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "staging"
+      }
     },
     "testflight": {
       "extends": "production",
       "environment": "preview",
-      "distribution": "store"
+      "distribution": "store",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "staging"
+      }
     },
     "play-testing": {
       "extends": "production",
       "environment": "preview",
-      "distribution": "store"
+      "distribution": "store",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "staging"
+      }
     },
     "production": {
       "environment": "production",
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "production"
+      }
     }
   },
   "submit": {

@@ -9,6 +9,8 @@ const includedRoots = [
   'package.json',
   'package-lock.json',
   'app.json',
+  'app.config.js',
+  'eas.json',
   'src',
   'scripts',
 ];

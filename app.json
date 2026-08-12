@@ -3,7 +3,7 @@
     "name": "LEGHEVO",
     "slug": "leghevo",
     "scheme": "leghevo",
-    "version": "0.62.49",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -32,7 +32,7 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "5"
+      "buildNumber": "6"
     },
     "android": {
       "package": "com.leghevo.app",
@@ -41,7 +41,8 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/favicon.png"
